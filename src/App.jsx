@@ -6,8 +6,9 @@ import Dashboard from './pages/Dashboard';
 import Profile from './pages/user/Profile';
 import Settings from './pages/user/Settings';
 import ChangePassword from './pages/user/ChangePassword';
-import AllEmployee from './pages/Masters/Employee/AllEmployee';
-import AddEmployee from './pages/Masters/Employee/AddEmployee';
+import AllEmployee from './pages/masters/Employee/AllEmployee';
+import AddEmployee from './pages/masters/Employee/AddEmployee';
+import Roles from './pages/Masters/Roles/Roles';
 
 function App() {
   return (
@@ -23,9 +24,10 @@ function App() {
           <Route path="profile" element={<Profile />} />
           <Route path="settings" element={<Settings />} />
           <Route path="change-password" element={<ChangePassword />} />
-          <Route path="masters">
+          <Route path="masters/">
             <Route path="employee/view" element={<AllEmployee />} />
             <Route path="employee/add" element={<AddEmployee />} />
+            <Route path="roles" element={<Roles />} />
           </Route>
         </Route>
       </Routes>
