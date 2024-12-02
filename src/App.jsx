@@ -24,11 +24,13 @@ function App() {
           <Route path="profile" element={<Profile />} />
           <Route path="settings" element={<Settings />} />
           <Route path="change-password" element={<ChangePassword />} />
-          <Route path="masters/">
-            <Route path="employee/view" element={<AllEmployee />} />
-            <Route path="employee/add" element={<AddEmployee />} />
-            <Route path="roles" element={<Roles />} />
-          </Route>
+          
+          {/* Masters Routes */}
+          <Route path="masters" element={<Navigate to="/masters/employee/view" replace />} />
+          <Route path="masters/employee" element={<Navigate to="/masters/employee/view" replace />} />
+          <Route path="masters/employee/view" element={<AllEmployee />} />
+          <Route path="masters/employee/add" element={<AddEmployee />} />
+          <Route path="masters/roles" element={<Roles />} />
         </Route>
       </Routes>
     </Router>
