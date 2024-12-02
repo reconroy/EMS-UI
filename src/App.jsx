@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { useState } from 'react';
 import Layout from "./layout/layout";
 import Login from './pages/user/login';
 import Forgot from './pages/user/Forgot';
@@ -6,19 +7,29 @@ import Dashboard from './pages/Dashboard';
 import Profile from './pages/user/Profile';
 import Settings from './pages/user/Settings';
 import ChangePassword from './pages/user/ChangePassword';
-import AllEmployee from './pages/masters/Employee/AllEmployee';
-import AddEmployee from './pages/masters/Employee/AddEmployee';
+import AllEmployee from './pages/Masters/Employee/AllEmployee';
+import AddEmployee from './pages/Masters/Employee/AddEmployee';
 import Roles from './pages/Masters/Roles/Roles';
 
 function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(true);
+
   return (
     <Router>
       <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/forgot-password" element={<Forgot />} />
-        
+        {/* Public Routes - with redirect if authenticated */}
+        <Route path="/login" 
+          element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Login onLogin={() => setIsAuthenticated(true)} />} 
+        />
+        <Route path="/forgot-password" 
+          element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Forgot />} 
+        />
+
         {/* Protected Routes */}
-        <Route path="/" element={<Layout />}>
+        <Route
+          element={!isAuthenticated ? <Navigate to="/login" replace /> : <Layout />}
+          path="/"
+        >
           <Route index element={<Navigate to="/dashboard" replace />} />
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="profile" element={<Profile />} />
@@ -31,7 +42,13 @@ function App() {
           <Route path="masters/employee/view" element={<AllEmployee />} />
           <Route path="masters/employee/add" element={<AddEmployee />} />
           <Route path="masters/roles" element={<Roles />} />
+
+          {/* Catch all route for authenticated users */}
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Route>
+
+        {/* Catch all route for non-authenticated users */}
+        <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </Router>
   );
