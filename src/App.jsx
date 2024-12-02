@@ -10,6 +10,9 @@ import ChangePassword from './pages/user/ChangePassword';
 import AllEmployee from './pages/Masters/Employee/AllEmployee';
 import AddEmployee from './pages/Masters/Employee/AddEmployee';
 import Roles from './pages/Masters/Roles/Roles';
+import Department from './pages/Masters/Department/Department';
+import Location from './pages/Masters/Location/Location';
+import Designation from './pages/Masters/Designation/Designation';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(true);
@@ -42,6 +45,9 @@ function App() {
           <Route path="masters/employee/view" element={<AllEmployee />} />
           <Route path="masters/employee/add" element={<AddEmployee />} />
           <Route path="masters/roles" element={<Roles />} />
+          <Route path="masters/departments" element={<Department />} />
+          <Route path="masters/locations" element={<Location />} />
+          <Route path="masters/designations" element={<Designation />} />
 
           {/* Catch all route for authenticated users */}
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
