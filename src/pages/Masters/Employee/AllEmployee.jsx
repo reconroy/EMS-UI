@@ -27,6 +27,7 @@ import {
   FiChevronRight
 } from 'react-icons/fi';
 import employeeData from '../../../data/dummyEmployees.json';
+import * as XLSX from 'xlsx';
 
 const AllEmployee = () => {
   const theme = useThemeStore((state) => state.theme);
@@ -37,9 +38,21 @@ const AllEmployee = () => {
     pageIndex: 0,
     pageSize: 10,
   });
+  const [columnFilters, setColumnFilters] = useState([]);
+  const [showFilters, setShowFilters] = useState(false);
+
+  // Get unique values for filter dropdowns
+  const getUniqueValues = (data, key) => {
+    return [...new Set(data.map(item => item[key]))].sort();
+  };
 
   // Replace the data constant with:
   const data = useMemo(() => employeeData.employees, []);
+  
+  const departments = useMemo(() => getUniqueValues(data, 'department'), [data]);
+  const locations = useMemo(() => getUniqueValues(data, 'location'), [data]);
+  const designations = useMemo(() => getUniqueValues(data, 'designation'), [data]);
+  const statuses = useMemo(() => getUniqueValues(data, 'status'), [data]);
 
   const columns = useMemo(() => [
     {
@@ -83,7 +96,8 @@ const AllEmployee = () => {
     },
     {
       id: 'actions',
-      header: '',
+      header: 'Actions',
+      enableSorting: false,
       cell: () => (
         <div className="flex justify-end gap-3">
           <button className="text-purple-400 hover:text-purple-300 transition-colors">
@@ -100,15 +114,82 @@ const AllEmployee = () => {
     },
   ], []);
 
-  // Fuzzy search function
+  // Enhanced fuzzy search function
   const fuzzyFilter = (row, columnId, value, addMeta) => {
+    // Get the value of the current cell
     const itemValue = row.getValue(columnId);
-    if (itemValue == null) return false;
     
+    // If the cell has no value, check other cells in the row
+    if (itemValue == null) {
+      // Search through all column values in this row
+      const rowValues = columns.map(col => 
+        col.accessorKey ? row.getValue(col.accessorKey) : null
+      );
+      return rowValues.some(val => 
+        val != null && 
+        String(val).toLowerCase().includes(value.toLowerCase())
+      );
+    }
+    
+    // Convert both the search value and cell value to lowercase for case-insensitive comparison
     const searchValue = value.toLowerCase();
     const itemString = String(itemValue).toLowerCase();
     
+    // Check if the cell value includes the search term
     return itemString.includes(searchValue);
+  };
+
+  const FilterDropdown = ({ column, options, label }) => {
+    const currentFilter = columnFilters.find(f => f.id === column)?.value || '';
+    
+    return (
+      <div className="flex flex-col gap-1">
+        <label className={`text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+          {label}
+        </label>
+        <select
+          value={currentFilter}
+          onChange={e => {
+            const value = e.target.value;
+            if (value === '') {
+              setColumnFilters(prev => prev.filter(f => f.id !== column));
+            } else {
+              setColumnFilters(prev => {
+                const existing = prev.find(f => f.id === column);
+                if (existing) {
+                  return prev.map(f => f.id === column ? { ...f, value } : f);
+                }
+                return [...prev, { id: column, value }];
+              });
+            }
+          }}
+          className={`px-3 py-1.5 rounded-lg border ${
+            theme === 'dark'
+              ? 'bg-purple-900/20 border-purple-500/20 text-purple-100'
+              : 'bg-white border-gray-200 text-gray-900'
+          }`}
+          style={{
+            colorScheme: theme === 'dark' ? 'dark' : 'light'
+          }}
+        >
+          <option 
+            value="" 
+            className={theme === 'dark' ? 'bg-gray-800 text-purple-100' : 'bg-white text-gray-900'}
+          >
+            All {label}s
+          </option>
+          {options.map(option => (
+            <option 
+              key={option} 
+              value={option}
+              className={theme === 'dark' ? 'bg-gray-800 text-purple-100' : 'bg-white text-gray-900'}
+            >
+              {option}
+            </option>
+          ))}
+        </select>
+      </div>
+    );
   };
 
   const table = useReactTable({
@@ -118,20 +199,18 @@ const AllEmployee = () => {
       globalFilter,
       sorting,
       pagination,
+      columnFilters,
     },
     onGlobalFilterChange: setGlobalFilter,
     onSortingChange: setSorting,
     onPaginationChange: setPagination,
+    onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     globalFilterFn: fuzzyFilter,
-    // Enable filtering for all columns
-    columns: columns.map(column => ({
-      ...column,
-      enableGlobalFilter: true,
-    })),
+    enableGlobalFilter: true,
   });
 
   const cardClass = theme === 'dark'
@@ -153,6 +232,46 @@ const AllEmployee = () => {
   const secondaryButtonClass = theme === 'dark'
     ? 'bg-purple-900/40 hover:bg-purple-900/60 text-purple-300'
     : 'bg-purple-50 hover:bg-purple-100 text-purple-600';
+
+  const handleExport = () => {
+    // Get all filtered rows without pagination
+    const filteredRows = table.getFilteredRowModel().rows;
+
+    // Prepare the data for export (excluding the actions column)
+    const exportData = filteredRows.map(row => ({
+      'Employee ID': row.original.id,
+      'Name': row.original.name,
+      'Department': row.original.department,
+      'Designation': row.original.designation,
+      'Location': row.original.location,
+      'Status': row.original.status
+    }));
+
+    // Create worksheet
+    const ws = XLSX.utils.json_to_sheet(exportData);
+
+    // Set column widths
+    const colWidths = [
+      { wch: 15 }, // Employee ID
+      { wch: 20 }, // Name
+      { wch: 15 }, // Department
+      { wch: 20 }, // Designation
+      { wch: 15 }, // Location
+      { wch: 10 }  // Status
+    ];
+    ws['!cols'] = colWidths;
+
+    // Create workbook
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Employees');
+
+    // Generate file name with current date
+    const date = new Date().toISOString().split('T')[0];
+    const fileName = `employees_${date}.xlsx`;
+
+    // Save file
+    XLSX.writeFile(wb, fileName);
+  };
 
   return (
     <div className="space-y-6">
@@ -203,11 +322,17 @@ const AllEmployee = () => {
             </div>
           </div>
           <div className="flex gap-2">
-            <button className={`px-4 py-2 rounded-lg flex items-center gap-2 ${secondaryButtonClass}`}>
+            <button 
+              onClick={() => setShowFilters(!showFilters)}
+              className={`px-4 py-2 rounded-lg flex items-center gap-2 ${secondaryButtonClass}`}
+            >
               <FiFilter className="w-5 h-5" />
               <span className="hidden sm:inline">Filters</span>
             </button>
-            <button className={`px-4 py-2 rounded-lg flex items-center gap-2 ${secondaryButtonClass}`}>
+            <button 
+              onClick={handleExport}
+              className={`px-4 py-2 rounded-lg flex items-center gap-2 ${secondaryButtonClass}`}
+            >
               <FiDownload className="w-5 h-5" />
               <span className="hidden sm:inline">Export</span>
             </button>
@@ -217,6 +342,36 @@ const AllEmployee = () => {
             </button>
           </div>
         </div>
+
+        {/* Column Filters */}
+        {showFilters && (
+          <motion.div 
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4 border-t border-gray-200 dark:border-gray-700"
+          >
+            <FilterDropdown 
+              column="department"
+              options={departments}
+              label="Department"
+            />
+            <FilterDropdown 
+              column="designation"
+              options={designations}
+              label="Designation"
+            />
+            <FilterDropdown 
+              column="location"
+              options={locations}
+              label="Location"
+            />
+            <FilterDropdown 
+              column="status"
+              options={statuses}
+              label="Status"
+            />
+          </motion.div>
+        )}
       </motion.div>
 
       {/* Table Section */}
