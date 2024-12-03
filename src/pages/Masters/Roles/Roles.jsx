@@ -22,14 +22,16 @@ const ClearableInput = ({ value, onChange, placeholder, className, required = fa
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         required={required}
-        className={className}
+        className={`transition-colors duration-200 ${className}`}
       />
       {value && (
         <button
           type="button"
           onClick={() => onChange('')}
           className={`absolute right-3 top-1/2 transform -translate-y-1/2 ${
-            theme === 'dark' ? 'text-purple-400 hover:text-purple-300' : 'text-gray-400 hover:text-gray-500'
+            theme === 'dark' 
+              ? 'text-purple-400 hover:text-purple-300' 
+              : 'text-slate-400 hover:text-slate-600'
           } transition-colors`}
         >
           <FiX className="w-4 h-4" />
@@ -134,19 +136,27 @@ const Roles = () => {
 
   const cardClass = theme === 'dark'
     ? 'bg-black/40 backdrop-blur-xl border-purple-500/20'
-    : 'bg-white border-gray-200 shadow-lg';
+    : 'bg-white border-gray-200 shadow-sm';
 
   const textClass = theme === 'dark'
     ? 'text-purple-100'
-    : 'text-gray-900';
+    : 'text-gray-700';
 
   const subTextClass = theme === 'dark'
     ? 'text-purple-300'
-    : 'text-gray-600';
+    : 'text-gray-500';
 
   const inputClass = theme === 'dark'
     ? 'bg-purple-900/20 border-purple-500/20 text-purple-100 placeholder-purple-400'
-    : 'bg-white border-gray-200 text-gray-900 placeholder-gray-400';
+    : 'bg-slate-50 border-slate-200 text-slate-600 placeholder-slate-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500';
+
+  const buttonClass = theme === 'dark'
+    ? 'bg-purple-600 hover:bg-purple-700 text-white'
+    : 'bg-blue-600 hover:bg-blue-700 text-white';
+
+  const secondaryButtonClass = theme === 'dark'
+    ? 'bg-purple-900/40 hover:bg-purple-900/60 text-purple-100'
+    : 'bg-blue-50 hover:bg-blue-100 text-blue-700';
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -165,7 +175,11 @@ const Roles = () => {
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
       >
-        <h1 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
+        <h1 className={`text-3xl font-bold ${
+          theme === 'dark' 
+            ? 'text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400'
+            : 'text-blue-700'
+        }`}>
           Roles Management
         </h1>
         <p className={`${subTextClass} mt-1`}>Create and manage user roles</p>
@@ -221,11 +235,7 @@ const Roles = () => {
           <div className="flex justify-end">
             <button
               type="submit"
-              className={`px-4 py-2 rounded-lg flex items-center gap-2 ${
-                theme === 'dark'
-                  ? 'bg-purple-600 hover:bg-purple-700 text-white'
-                  : 'bg-purple-600 hover:bg-purple-700 text-white'
-              }`}
+              className={`px-4 py-2 rounded-lg flex items-center gap-2 ${buttonClass}`}
             >
               <FiSave className="w-5 h-5" />
               <span>Save Role</span>

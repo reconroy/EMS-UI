@@ -14,7 +14,7 @@ const Navbar = ({ onMenuClick }) => {
   };
 
   return (
-    <nav className="bg-black/40 border-b border-purple-500/20 p-4">
+    <nav className={`bg-black/40 border-b border-purple-500/20 p-4 ${theme === 'dark' ? 'bg-black/40 backdrop-blur-xl border-r border-purple-500/20' : 'bg-slate-100 border-r border-slate-200'}`}>
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-4">
           <motion.button

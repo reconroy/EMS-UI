@@ -6,19 +6,19 @@ import { useThemeStore } from '../store/themeStore';
 const Dashboard = () => {
   const theme = useThemeStore((state) => state.theme);
   const [stats] = useState([
-    { title: 'Total Employees', value: '156', icon: <FiUsers />, color: 'from-purple-500 to-pink-500' },
-    { title: 'Active Projects', value: '12', icon: <FiCalendar />, color: 'from-blue-500 to-purple-500' },
-    { title: 'Revenue', value: '$52,000', icon: <FiDollarSign />, color: 'from-green-500 to-teal-500' },
-    { title: 'Growth', value: '+12%', icon: <FiTrendingUp />, color: 'from-orange-500 to-red-500' }
+    { title: 'Total Employees', value: '156', icon: <FiUsers />, color: 'from-blue-500 to-blue-700' },
+    { title: 'Active Projects', value: '12', icon: <FiCalendar />, color: 'from-blue-500 to-blue-700' },
+    { title: 'Revenue', value: '$52,000', icon: <FiDollarSign />, color: 'from-blue-500 to-blue-700' },
+    { title: 'Growth', value: '+12%', icon: <FiTrendingUp />, color: 'from-blue-500 to-blue-700' }
   ]);
 
   const cardClass = theme === 'dark' 
     ? 'bg-black/40 backdrop-blur-xl border-purple-500/20' 
-    : 'bg-white border-gray-200 shadow-lg';
+    : 'bg-white border-slate-200 shadow-lg';
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-800">
+      <h1 className={`text-3xl font-bold ${theme === 'dark' ? 'text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-800' : 'text-blue-700'}`}>
         Welcome Back
       </h1>
 
@@ -33,10 +33,10 @@ const Dashboard = () => {
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className={`${theme === 'dark' ? 'text-purple-300' : 'text-gray-600'} text-sm`}>
+                <p className={`${theme === 'dark' ? 'text-purple-300' : 'text-slate-600'} text-sm`}>
                   {stat.title}
                 </p>
-                <p className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'} mt-2`}>
+                <p className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-slate-900'} mt-2`}>
                   {stat.value}
                 </p>
               </div>
@@ -50,18 +50,18 @@ const Dashboard = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <div className={`border rounded-lg p-6 ${cardClass}`}>
-          <h2 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 mb-4">
+          <h2 className={`text-xl font-bold ${theme === 'dark' ? 'text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400' : 'text-blue-700'} mb-4`}>
             Recent Activity
           </h2>
           <div className="space-y-4">
-            <div className={theme === 'dark' ? 'text-purple-300' : 'text-gray-600'}>
+            <div className={theme === 'dark' ? 'text-purple-300' : 'text-slate-600'}>
               No recent activity to display
             </div>
           </div>
         </div>
 
         <div className={`border rounded-lg p-6 ${cardClass}`}>
-          <h2 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 mb-4">
+          <h2 className={`text-xl font-bold ${theme === 'dark' ? 'text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400' : 'text-blue-700'} mb-4`}>
             Quick Actions
           </h2>
           <div className="grid grid-cols-2 gap-4">
@@ -71,7 +71,7 @@ const Dashboard = () => {
                 className={`p-4 rounded-lg transition-colors duration-200 ${
                   theme === 'dark'
                     ? 'bg-purple-600/20 hover:bg-purple-600/30 text-purple-300'
-                    : 'bg-purple-100 hover:bg-purple-200 text-purple-700'
+                    : 'bg-blue-100 hover:bg-blue-200 text-blue-700'
                 }`}
               >
                 {action}

@@ -51,7 +51,7 @@ const Sidebar = ({ onClose, isMobile, isCollapsed, onCollapse }) => {
         <div className="space-y-2">
           <button
             onClick={() => toggleExpand(item.path)}
-            className={`w-full flex items-center ${!isMobile && isCollapsed ? 'justify-center' : 'justify-between'} p-3 rounded-lg transition-colors duration-200 text-purple-300 hover:bg-purple-900/50`}
+            className={`w-full flex items-center ${!isMobile && isCollapsed ? 'justify-center' : 'justify-between'} p-3 rounded-lg transition-colors duration-200 ${theme === 'dark' ? 'text-purple-300 hover:bg-purple-900/50' : 'text-blue-700 hover:bg-blue-100'}`}
           >
             <div className="flex items-center space-x-3">
               {item.icon}
@@ -91,8 +91,8 @@ const Sidebar = ({ onClose, isMobile, isCollapsed, onCollapse }) => {
                       onClick={onClose}
                       className={`flex items-center space-x-2 py-2 px-3 rounded-lg transition-colors duration-200 ${
                         location.pathname === subItem.path
-                          ? "bg-purple-600 text-white"
-                          : "text-purple-300 hover:bg-purple-900/50"
+                          ? "bg-blue-600 text-white"
+                          : theme === 'dark' ? "text-purple-300 hover:bg-purple-900/50" : "text-blue-700 hover:bg-blue-100"
                       }`}
                     >
                       {subItem.icon}
@@ -114,8 +114,8 @@ const Sidebar = ({ onClose, isMobile, isCollapsed, onCollapse }) => {
             onClick={onClose}
             className={`flex items-center ${!isMobile && isCollapsed ? 'justify-center' : 'space-x-3'} p-3 rounded-lg transition-colors duration-200 ${
               location.pathname === item.path
-                ? "bg-purple-600 text-white"
-                : "text-purple-300 hover:bg-purple-900/50"
+                ? "bg-blue-600 text-white"
+                : theme === 'dark' ? "text-purple-300 hover:bg-purple-900/50" : "text-blue-700 hover:bg-blue-100"
             }`}
           >
             {item.icon}
@@ -142,7 +142,7 @@ const Sidebar = ({ onClose, isMobile, isCollapsed, onCollapse }) => {
       initial={false}
       animate={{ width: !isMobile && isCollapsed ? "4.5rem" : "16rem" }}
       transition={{ duration: 0.2 }}
-      className="h-screen bg-black/40 backdrop-blur-xl border-r border-purple-500/20"
+      className={`h-screen ${theme === 'dark' ? 'bg-black/40 backdrop-blur-xl border-r border-purple-500/20' : 'bg-slate-100 border-r border-slate-200'}`}
     >
       <div className="p-4">
         <div className="flex items-center justify-between mb-8">
