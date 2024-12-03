@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useThemeStore } from '../../../store/themeStore';
 import { useNavigate } from 'react-router-dom';
-import { FiArrowLeft, FiSave } from 'react-icons/fi';
+import { FiArrowLeft, FiSave, FiArrowRight } from 'react-icons/fi';
 
 import StepIndicator from './Form/StepIndicator';
 import BasicDetails from './Form/BasicDetails';
@@ -19,6 +19,7 @@ const AddEmployee = () => {
     const savedData = localStorage.getItem(STORAGE_KEY);
     return savedData ? JSON.parse(savedData) : {};
   });
+  const [isConfirmed, setIsConfirmed] = useState(false);
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(formData));
@@ -38,10 +39,10 @@ const AddEmployee = () => {
   };
 
   const handleSubmit = () => {
-    // Submit logic will be added here
-    console.log('Form submitted:', formData);
-    localStorage.removeItem(STORAGE_KEY);
-    navigate('/masters/employee/view');
+    if (isConfirmed) {
+      // Submit logic here
+      console.log('Form submitted:', formData);
+    }
   };
 
   const renderStepContent = () => {
@@ -63,7 +64,7 @@ const AddEmployee = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+      {/* Header with Navigation */}
       <div className="flex items-center justify-between">
         <motion.div
           initial={{ opacity: 0, x: -20 }}
@@ -78,11 +79,11 @@ const AddEmployee = () => {
           </button>
         </motion.div>
 
-        <div className="flex gap-4">
+        <div className="flex gap-3">
           {currentStep > 1 && (
             <motion.button
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
               onClick={handlePrevious}
               className="px-4 py-2 rounded-lg border border-purple-600 text-purple-600"
             >
@@ -90,21 +91,16 @@ const AddEmployee = () => {
             </motion.button>
           )}
           
-          <motion.button
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            onClick={currentStep === 3 ? handleSubmit : handleNext}
-            className="px-4 py-2 rounded-lg flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white"
-          >
-            {currentStep === 3 ? (
-              <>
-                <FiSave className="w-5 h-5" />
-                <span>Submit</span>
-              </>
-            ) : (
-              <span>Next</span>
-            )}
-          </motion.button>
+          {currentStep < 3 && (
+            <motion.button
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              onClick={handleNext}
+              className="px-4 py-2 rounded-lg bg-purple-600 hover:bg-purple-700 text-white"
+            >
+              Next
+            </motion.button>
+          )}
         </div>
       </div>
 
@@ -119,6 +115,46 @@ const AddEmployee = () => {
       >
         {renderStepContent()}
       </motion.div>
+
+      {/* Confirmation and Submit Section */}
+      {currentStep === 3 && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="space-y-4 pt-6 border-t border-gray-200 dark:border-gray-700"
+        >
+          <div className="flex items-center gap-3">
+            <input
+              type="checkbox"
+              id="confirmDetails"
+              checked={isConfirmed}
+              onChange={(e) => setIsConfirmed(e.target.checked)}
+              className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
+            />
+            <label 
+              htmlFor="confirmDetails" 
+              className="text-sm text-gray-900 dark:text-gray-300"
+            >
+              I confirm that all the details provided are correct and accurate.
+            </label>
+          </div>
+
+          <motion.button
+            onClick={handleSubmit}
+            disabled={!isConfirmed}
+            whileHover={isConfirmed ? { scale: 1.02 } : {}}
+            whileTap={isConfirmed ? { scale: 0.98 } : {}}
+            className={`w-full py-3 px-4 rounded-lg flex items-center justify-center gap-2 
+              ${isConfirmed 
+                ? 'bg-purple-600 hover:bg-purple-700 text-white cursor-pointer' 
+                : 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
+              } transition-colors duration-200`}
+          >
+            <FiSave className="w-4 h-4" />
+            <span>Submit Employee Details</span>
+          </motion.button>
+        </motion.div>
+      )}
     </div>
   );
 };

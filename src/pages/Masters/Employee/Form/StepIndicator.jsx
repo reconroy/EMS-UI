@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { FiCheck } from 'react-icons/fi';
 
 const StepIndicator = ({ currentStep }) => {
   const steps = [
@@ -13,21 +14,32 @@ const StepIndicator = ({ currentStep }) => {
       <div className="flex justify-between items-center">
         {steps.map((step, index) => (
           <React.Fragment key={step.number}>
-            {/* Step Circle */}
             <div className="flex flex-col items-center">
               <motion.div
                 initial={{ scale: 0.8 }}
                 animate={{ 
-                  scale: currentStep === step.number ? 1.1 : 1,
-                  backgroundColor: currentStep >= step.number ? 'rgb(147, 51, 234)' : 'rgb(107, 114, 128)'
+                  scale: currentStep === step.number ? 1.1 : 1
                 }}
-                className={`w-10 h-10 rounded-full flex items-center justify-center
-                  ${currentStep >= step.number ? 'bg-purple-600' : 'bg-gray-500'}`}
+                className={`w-10 h-10 rounded-full flex items-center justify-center text-white
+                  ${currentStep > step.number 
+                    ? 'bg-green-500' // Completed step
+                    : currentStep === step.number 
+                      ? 'bg-purple-600' // Current step
+                      : 'bg-gray-500'   // Upcoming step
+                  }`}
               >
-                <span className="text-white font-medium">{step.number}</span>
+                {currentStep > step.number ? (
+                  <FiCheck className="w-5 h-5" />
+                ) : (
+                  <span className="font-medium">{step.number}</span>
+                )}
               </motion.div>
               <span className={`mt-2 text-sm ${
-                currentStep === step.number ? 'text-purple-600 font-medium' : 'text-gray-500'
+                currentStep === step.number 
+                  ? 'text-purple-600 font-medium' 
+                  : currentStep > step.number
+                    ? 'text-green-500 font-medium'
+                    : 'text-gray-500'
               }`}>
                 {step.label}
               </span>
@@ -42,7 +54,7 @@ const StepIndicator = ({ currentStep }) => {
                   animate={{ 
                     width: currentStep > step.number ? '100%' : '0%'
                   }}
-                  className="absolute inset-0 bg-purple-600"
+                  className="absolute inset-0 bg-green-500"
                 ></motion.div>
               </div>
             )}

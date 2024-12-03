@@ -1,15 +1,25 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useThemeStore } from '../../../../store/themeStore';
+import { FiArrowRight } from 'react-icons/fi';
+import { motion } from 'framer-motion';
 
-const BasicDetails = ({ formData, setFormData }) => {
+const BasicDetails = ({ formData, setFormData, onNext }) => {
   const theme = useThemeStore((state) => state.theme);
-  
+  const [isConfirmed, setIsConfirmed] = useState(false);
+  const [isRequiredFields, setIsRequiredFields] = useState(false);
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
       [name]: value
     }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (isConfirmed) {
+      onNext();
+    }
   };
 
   const FormSection = ({ title, children }) => (
@@ -102,18 +112,18 @@ const BasicDetails = ({ formData, setFormData }) => {
   );
 
   return (
-    <form className="space-y-8">
+    <form onSubmit={handleSubmit} className="space-y-8">
       {/* Personal Information */}
       <FormSection title="Personal Information">
-        <InputField label="Full Name" name="fullName" required />
+        <InputField label="Full Name" name="fullName" required={isRequiredFields} />
         <InputField label="Alias Name" name="aliasName" />
-        <InputField label="Father's Name" name="fatherName" required />
-        <InputField label="Mother's Name" name="motherName" required />
-        <InputField label="Date of Birth" name="dateOfBirth" type="date" required />
+        <InputField label="Father's Name" name="fatherName" required={isRequiredFields} />
+        <InputField label="Mother's Name" name="motherName" required={isRequiredFields} />
+        <InputField label="Date of Birth" name="dateOfBirth" type="date" required={isRequiredFields} />
         <SelectField 
           label="Gender" 
           name="gender" 
-          required
+          required={isRequiredFields}
           options={[
             { value: "", label: "Select Gender" },
             { value: "M", label: "Male" },
@@ -132,45 +142,45 @@ const BasicDetails = ({ formData, setFormData }) => {
             { value: "widowed", label: "Widowed" }
           ]}
         />
-        <InputField label="Qualification" name="qualification" required />
+        <InputField label="Qualification" name="qualification" required={isRequiredFields} />
       </FormSection>
 
       {/* Contact Information */}
       <FormSection title="Contact Information">
-        <InputField label="Mobile 1" name="mobile1" type="tel" required />
+        <InputField label="Mobile 1" name="mobile1" type="tel" required={isRequiredFields} />
         <InputField label="Mobile 2" name="mobile2" type="tel" />
-        <InputField label="Email Address" name="email" type="email" required />
+        <InputField label="Email Address" name="email" type="email" required={isRequiredFields} />
       </FormSection>
 
       {/* Address Information */}
       <FormSection title="Address Information">
-        <TextArea label="Permanent Address" name="permanentAddress" required />
-        <InputField label="Permanent Pin Code" name="permanentPinCode" required />
+        <TextArea label="Permanent Address" name="permanentAddress" required={isRequiredFields} />
+        <InputField label="Permanent Pin Code" name="permanentPinCode" required={isRequiredFields} />
         <TextArea label="Correspondence Address" name="correspondenceAddress" />
         <InputField label="Correspondence Pin Code" name="correspondencePinCode" />
-        <InputField label="Post Office" name="postOffice" required />
-        <InputField label="District" name="district" required />
+        <InputField label="Post Office" name="postOffice" required={isRequiredFields} />
+        <InputField label="District" name="district" required={isRequiredFields} />
       </FormSection>
 
       {/* Professional Information */}
       <FormSection title="Professional Information">
-        <InputField label="Location" name="location" required />
-        <InputField label="Department" name="department" required />
-        <InputField label="Designation" name="designation" required />
+        <InputField label="Location" name="location" required={isRequiredFields} />
+        <InputField label="Department" name="department" required={isRequiredFields} />
+        <InputField label="Designation" name="designation" required={isRequiredFields} />
       </FormSection>
 
       {/* Identity Information */}
       <FormSection title="Identity Information">
-        <InputField label="Aadhaar Number" name="aadhaarNo" required />
-        <InputField label="PAN Number" name="panNo" required />
+        <InputField label="Aadhaar Number" name="aadhaarNo" required={isRequiredFields} />
+        <InputField label="PAN Number" name="panNo" required={isRequiredFields} />
       </FormSection>
 
       {/* Bank Details */}
       <FormSection title="Bank Details">
-        <InputField label="Bank Name" name="bankName" required />
-        <InputField label="Branch Name" name="branchName" required />
-        <InputField label="Account Number" name="accountNo" required />
-        <InputField label="IFSC Code" name="ifscCode" required />
+        <InputField label="Bank Name" name="bankName" required={isRequiredFields} />
+        <InputField label="Branch Name" name="branchName" required={isRequiredFields} />
+        <InputField label="Account Number" name="accountNo" required={isRequiredFields} />
+        <InputField label="IFSC Code" name="ifscCode" required={isRequiredFields} />
       </FormSection>
 
       {/* Dependent Family Details */}
@@ -245,6 +255,40 @@ const BasicDetails = ({ formData, setFormData }) => {
           </button>
         </div>
       </FormSection>
+
+      {/* Confirmation and Submit Section */}
+      <div className="space-y-4 pt-6 border-t border-gray-200 dark:border-gray-700">
+        <div className="flex items-center gap-3">
+          <input
+            type="checkbox"
+            id="confirmDetails"
+            checked={isConfirmed}
+            onChange={(e) => setIsConfirmed(e.target.checked)}
+            className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
+          />
+          <label 
+            htmlFor="confirmDetails" 
+            className={`text-sm ${theme === 'light' ? 'text-gray-900' : 'text-gray-300'}`}
+          >
+            I confirm that all the details provided above are correct and accurate.
+          </label>
+        </div>
+
+        <motion.button
+          type="submit"
+          disabled={!isConfirmed}
+          whileHover={isConfirmed ? { scale: 1.02 } : {}}
+          whileTap={isConfirmed ? { scale: 0.98 } : {}}
+          className={`w-full py-3 px-4 rounded-lg flex items-center justify-center gap-2 
+            ${isConfirmed 
+              ? 'bg-purple-600 hover:bg-purple-700 text-white cursor-pointer' 
+              : 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
+            } transition-colors duration-200`}
+        >
+          <span>Proceed to Document Upload</span>
+          <FiArrowRight className="w-4 h-4" />
+        </motion.button>
+      </div>
     </form>
   );
 };
