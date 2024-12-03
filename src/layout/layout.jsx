@@ -38,9 +38,14 @@ function Layout() {
         <Navbar onMenuClick={() => setIsMobileMenuOpen(true)} className="" />
         <main className={`flex-1 overflow-auto p-4 md:p-6 ${
           theme === 'dark' 
+            ? '' 
+            : 'bg-white/90'
+        }`}>
+         {/* <main className={`flex-1 overflow-auto p-4 md:p-6 ${
+          theme === 'dark' 
             ? 'bg-gradient-to-br from-black via-purple-900 to-black' 
             : 'bg-white'
-        }`}>
+        }`}> */}
           <div className="container mx-auto">
             <Breadcrumb />
             <Outlet />
