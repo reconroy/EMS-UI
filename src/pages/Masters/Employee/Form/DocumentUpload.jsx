@@ -65,10 +65,12 @@ const DocumentUpload = ({ formData, setFormData, onNext, onPrevious }) => {
         const isDraggedOver = dragOver === fileType;
 
         return (
-            <div className={`p-6 rounded-xl border-2 transition-all duration-200 ${theme === 'light'
+            <div className={`p-6 rounded-xl border-2 transition-all duration-200 ${
+                theme === 'light'
                     ? 'bg-white shadow-sm hover:shadow-md'
                     : 'bg-gray-800 shadow-none'
-                } ${isDraggedOver
+                } ${
+                isDraggedOver
                     ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20'
                     : file
                         ? 'border-green-500/50'
@@ -98,17 +100,27 @@ const DocumentUpload = ({ formData, setFormData, onNext, onPrevious }) => {
                                 className="block cursor-pointer"
                             >
                                 <div className="space-y-4">
-                                    <div className={`flex flex-col items-center justify-center p-6 rounded-lg transition-colors ${isDraggedOver
+                                    <div className={`flex flex-col items-center justify-center p-6 rounded-lg transition-colors ${
+                                        isDraggedOver
                                             ? 'bg-purple-100 dark:bg-purple-900/30'
-                                            : 'bg-gray-50 dark:bg-gray-700/50'
+                                            : theme === 'light' 
+                                                ? 'bg-gray-100 hover:bg-gray-200'
+                                                : 'bg-gray-700/50'
                                         }`}>
-                                        <FiUploadCloud className={`w-10 h-10 mb-2 ${isDraggedOver ? 'text-purple-500' : 'text-gray-400'
+                                        <FiUploadCloud className={`w-10 h-10 mb-2 ${
+                                            isDraggedOver 
+                                                ? 'text-purple-500' 
+                                                : theme === 'light'
+                                                    ? 'text-gray-700'
+                                                    : 'text-gray-400'
                                             }`} />
                                         <div className="text-sm text-center">
                                             <span className="text-purple-600 dark:text-purple-400">Click to upload</span>
-                                            {' '}or drag and drop
+                                            {' '}<span className={theme === 'light' ? 'text-gray-700' : 'text-gray-400'}>or drag and drop</span>
                                         </div>
-                                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                        <p className={`text-xs mt-1 ${
+                                            theme === 'light' ? 'text-gray-700' : 'text-gray-400'
+                                        }`}>
                                             {description}
                                         </p>
                                     </div>
