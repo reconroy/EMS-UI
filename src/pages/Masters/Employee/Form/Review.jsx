@@ -1,9 +1,50 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { useThemeStore } from '../../../../store/themeStore';
-import { FiUser, FiPhone, FiMapPin, FiBriefcase, FiCreditCard, FiUsers } from 'react-icons/fi';
+import { FiUser, FiPhone, FiMapPin, FiBriefcase, FiCreditCard, FiUsers, FiDownload } from 'react-icons/fi';
+import PDFTemplate from './PDFTemplate';
+import ReactDOM from 'react-dom/client';
 
 const Review = ({ formData }) => {
   const theme = useThemeStore((state) => state.theme);
+  const reviewRef = useRef();
+
+  const downloadPDF = async () => {
+    try {
+      const html2canvas = (await import('html2canvas')).default;
+      const { jsPDF } = await import('jspdf');
+      
+      // Create a temporary div to render the PDF template
+      const tempDiv = document.createElement('div');
+      document.body.appendChild(tempDiv);
+      
+      // Render the PDF template
+      const root = ReactDOM.createRoot(tempDiv);
+      root.render(<PDFTemplate formData={formData} />);
+      
+      // Wait for images to load
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      const canvas = await html2canvas(tempDiv.firstChild, { 
+        scale: 2,
+        useCORS: true,
+        logging: false
+      });
+      
+      // Clean up
+      document.body.removeChild(tempDiv);
+      
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const imgProps = pdf.getImageProperties(imgData);
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+      
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      pdf.save('employee-details.pdf');
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+    }
+  };
 
   const Section = ({ icon: Icon, title, children }) => (
     <div className={`p-6 rounded-xl border ${
@@ -35,7 +76,7 @@ const Review = ({ formData }) => {
   );
 
   return (
-    <div className="max-w-5xl mx-auto space-y-8">
+    <div ref={reviewRef} className="max-w-5xl mx-auto space-y-8">
       {/* Header with Profile Photo */}
       <div className="flex items-center gap-6">
         <div className="relative">
@@ -120,7 +161,7 @@ const Review = ({ formData }) => {
 
       {/* Document Attachments */}
       <Section icon={FiUsers} title="Document Attachments">
-        <div className="col-span-full grid grid-cols-3 gap-4">
+        <div className="col-span-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {/* Aadhaar Card */}
           <div className={`p-4 rounded-lg border ${
             theme === 'light' ? 'border-gray-200' : 'border-gray-700'
@@ -152,16 +193,34 @@ const Review = ({ formData }) => {
               />
             )}
           </div>
+
+          {/* Passbook */}
+          <div className={`p-4 rounded-lg border ${
+            theme === 'light' ? 'border-gray-200' : 'border-gray-700'
+          }`}>
+            <h4 className={`text-sm font-medium mb-2 ${
+              theme === 'light' ? 'text-gray-900' : 'text-white'
+            }`}>Bank Passbook</h4>
+            {formData.passbook && (
+              <img
+                src={URL.createObjectURL(formData.passbook)}
+                alt="Bank Passbook"
+                className="w-full h-32 object-cover rounded-lg"
+              />
+            )}
+          </div>
         </div>
       </Section>
 
-      {/* Submit Button */}
+      {/* Download Button */}
       <div className="flex justify-end pt-6 border-t border-gray-200 dark:border-gray-700">
         <button
+          onClick={downloadPDF}
           className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 
-          transition-colors duration-200"
+          transition-colors duration-200 flex items-center gap-2"
         >
-          Submit Application
+          <FiDownload className="w-4 h-4" />
+          Download as PDF
         </button>
       </div>
     </div>
