@@ -24,7 +24,8 @@ import {
   FiChevronsLeft,
   FiChevronsRight,
   FiChevronLeft,
-  FiChevronRight
+  FiChevronRight,
+  FiX
 } from 'react-icons/fi';
 import employeeData from '../../../data/dummyEmployees.json';
 import * as XLSX from 'xlsx';
@@ -234,17 +235,14 @@ const AllEmployee = () => {
     : 'bg-purple-50 hover:bg-purple-100 text-purple-600';
 
   const handleExport = () => {
-    // Get all filtered rows without pagination
-    const filteredRows = table.getFilteredRowModel().rows;
-
     // Prepare the data for export (excluding the actions column)
-    const exportData = filteredRows.map(row => ({
-      'Employee ID': row.original.id,
-      'Name': row.original.name,
-      'Department': row.original.department,
-      'Designation': row.original.designation,
-      'Location': row.original.location,
-      'Status': row.original.status
+    const exportData = data.map(item => ({
+      'Employee ID': item.id,
+      'Name': item.name,
+      'Department': item.department,
+      'Designation': item.designation,
+      'Location': item.location,
+      'Status': item.status
     }));
 
     // Create worksheet
@@ -313,12 +311,22 @@ const AllEmployee = () => {
                 placeholder="Search employees..."
                 value={globalFilter ?? ''}
                 onChange={e => setGlobalFilter(e.target.value)}
-                className={`w-full pl-10 pr-4 py-2 rounded-lg border ${
+                className={`w-full pl-10 pr-10 py-2 rounded-lg border ${
                   theme === 'dark'
                     ? 'bg-purple-900/20 border-purple-500/20 text-purple-100 placeholder-purple-400'
                     : 'bg-white border-gray-200 text-gray-900 placeholder-gray-400'
                 }`}
               />
+              {globalFilter && (
+                <button
+                  onClick={() => setGlobalFilter('')}
+                  className={`absolute right-3 top-1/2 transform -translate-y-1/2 ${
+                    theme === 'dark' ? 'text-purple-400 hover:text-purple-300' : 'text-gray-400 hover:text-gray-500'
+                  } transition-colors`}
+                >
+                  <FiX className="w-4 h-4" />
+                </button>
+              )}
             </div>
           </div>
           <div className="flex gap-2">
