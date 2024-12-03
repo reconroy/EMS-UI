@@ -72,7 +72,7 @@ const AddEmployee = () => {
         >
           <button
             onClick={handleCancel}
-            className="flex items-center gap-2 text-gray-600 dark:text-purple-300 hover:text-gray-900 dark:hover:text-purple-100"
+            className="flex items-center gap-2 text-gray-800 dark:text-purple-300 hover:text-black dark:hover:text-purple-600"
           >
             <FiArrowLeft className="w-5 h-5" />
             <span>Cancel</span>
