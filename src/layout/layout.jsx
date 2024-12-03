@@ -35,7 +35,7 @@ function Layout() {
       
       {/* Main Content */}
       <div className={`flex flex-col flex-1 w-full md:w-[calc(100%-${isCollapsed ? '4.5rem' : '16rem'})]`}>
-        <Navbar onMenuClick={() => setIsMobileMenuOpen(true)} />
+        <Navbar onMenuClick={() => setIsMobileMenuOpen(true)} className="" />
         <main className={`flex-1 overflow-auto p-4 md:p-6 ${
           theme === 'dark' 
             ? 'bg-gradient-to-br from-black via-purple-900 to-black' 

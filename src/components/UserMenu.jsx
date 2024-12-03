@@ -20,15 +20,14 @@ const UserMenu = ({ onLogout }) => {
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => setIsOpen(!isOpen)}
-        className={`flex items-center gap-2 px-3 py-2 rounded-lg ${
-          theme === 'dark'
+        className={`flex items-center gap-2 px-3 py-2 rounded-lg ${theme === 'dark'
             ? 'hover:bg-purple-900/50 text-purple-300'
             : 'hover:bg-purple-100 text-purple-700'
-        }`}
+          }`}
       >
-        <img 
-          src={sampleUser} 
-          alt="User" 
+        <img
+          src={sampleUser}
+          alt="User"
           className="w-8 h-8 rounded-full object-cover border-2 border-purple-500/20"
         />
         <span className="hidden sm:block">Jayant Roy</span>
@@ -38,30 +37,29 @@ const UserMenu = ({ onLogout }) => {
       <AnimatePresence>
         {isOpen && (
           <>
-            <div 
-              className="fixed inset-0 z-30" 
+            <div
+              className="fixed inset-0"
               onClick={() => setIsOpen(false)}
             />
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 10 }}
-              className={`absolute right-0 mt-2 w-48 py-2 rounded-lg shadow-lg z-40 border backdrop-blur-xl ${
-                theme === 'dark'
-                  ? 'bg-black/40 border-purple-500/20 text-purple-300'
-                  : 'bg-white/80 border-gray-200 text-gray-700'
-              }`}
+              className={`absolute right-0 mt-2 w-48 py-2 rounded-lg shadow-lg  border backdrop-blur-xl ${theme === 'dark'
+                  ? 'bg-black border-purple-500/20 text-purple-300'
+                  : 'bg-white border-gray-200 text-gray-700'
+                }`}
+                style={{ zIndex: 50 }}
             >
               {menuItems.map((item) => (
                 <Link
                   key={item.path}
                   to={item.path}
                   onClick={() => setIsOpen(false)}
-                  className={`flex items-center gap-3 px-4 py-2 transition-colors duration-200 ${
-                    theme === 'dark' 
-                      ? 'hover:bg-purple-900/50' 
+                  className={`flex items-center gap-3 px-4 py-2 transition-colors duration-200 ${theme === 'dark'
+                      ? 'hover:bg-purple-900/50'
                       : 'hover:bg-purple-100'
-                  }`}
+                    }`}
                 >
                   {item.icon}
                   <span>{item.label}</span>
@@ -72,11 +70,10 @@ const UserMenu = ({ onLogout }) => {
                   setIsOpen(false);
                   onLogout();
                 }}
-                className={`w-full flex items-center gap-3 px-4 py-2 transition-colors duration-200 ${
-                  theme === 'dark' 
-                    ? 'hover:bg-purple-900/50' 
+                className={`w-full flex items-center gap-3 px-4 py-2 transition-colors duration-200 ${theme === 'dark'
+                    ? 'hover:bg-purple-900/50'
                     : 'hover:bg-purple-100'
-                }`}
+                  }`}
               >
                 <FiLogOut className="w-4 h-4" />
                 <span>Logout</span>
