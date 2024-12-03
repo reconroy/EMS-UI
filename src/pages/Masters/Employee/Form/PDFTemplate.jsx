@@ -1,5 +1,6 @@
 import React from 'react';
 import logo from './../../../../assets/logo/EMS-Logo-1.png'; // Make sure to add your logo
+import { FiUser } from 'react-icons/fi'; // Import icon for placeholder
 
 const PDFTemplate = ({ formData }) => {
   return (
@@ -21,12 +22,16 @@ const PDFTemplate = ({ formData }) => {
 
       {/* Employee Basic Info */}
       <div className="mt-8 flex items-start gap-6">
-        {formData.profilePhoto && (
+        {formData.profilePhoto ? (
           <img
             src={URL.createObjectURL(formData.profilePhoto)}
             alt="Profile"
             className="w-32 h-32 object-cover rounded-lg border-2 border-gray-200"
           />
+        ) : (
+          <div className="w-32 h-32 flex items-center justify-center rounded-lg border-2 border-gray-200 bg-gray-100">
+            <FiUser className="w-16 h-16 text-gray-400" />
+          </div>
         )}
         <div>
           <h2 className="text-xl font-bold text-gray-800">{formData.fullName}</h2>
