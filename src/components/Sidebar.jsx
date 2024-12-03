@@ -15,7 +15,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { useThemeStore } from '../store/themeStore';
 import { useState } from 'react';
-
+import logo from './../assets/logo/EMS-Logo-1.png';
 const Sidebar = ({ onClose, isMobile, isCollapsed, onCollapse }) => {
   const location = useLocation();
   const theme = useThemeStore((state) => state.theme);
@@ -156,14 +156,14 @@ const Sidebar = ({ onClose, isMobile, isCollapsed, onCollapse }) => {
           )}
           <AnimatePresence mode="wait">
             {(!isCollapsed || isMobile) && (
-              <motion.h2
+              <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400"
+                className="w-full flex justify-center"
               >
-                CUPL | EMS
-              </motion.h2>
+                <img src={logo} alt="CUPL | EMS" className="h-12 w-auto" />
+              </motion.div>
             )}
           </AnimatePresence>
           {!isMobile && (

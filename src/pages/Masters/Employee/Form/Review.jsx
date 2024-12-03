@@ -1,0 +1,171 @@
+import React from 'react';
+import { useThemeStore } from '../../../../store/themeStore';
+import { FiUser, FiPhone, FiMapPin, FiBriefcase, FiCreditCard, FiUsers } from 'react-icons/fi';
+
+const Review = ({ formData }) => {
+  const theme = useThemeStore((state) => state.theme);
+
+  const Section = ({ icon: Icon, title, children }) => (
+    <div className={`p-6 rounded-xl border ${
+      theme === 'light' 
+        ? 'bg-white border-gray-200' 
+        : 'bg-gray-800 border-gray-700'
+    }`}>
+      <div className="flex items-center gap-2 mb-4">
+        <Icon className={`w-5 h-5 ${theme === 'light' ? 'text-gray-700' : 'text-gray-300'}`} />
+        <h3 className={`text-lg font-medium ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>
+          {title}
+        </h3>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {children}
+      </div>
+    </div>
+  );
+
+  const Field = ({ label, value }) => (
+    <div className="space-y-1">
+      <dt className={`text-sm ${theme === 'light' ? 'text-gray-500' : 'text-gray-400'}`}>
+        {label}
+      </dt>
+      <dd className={`text-sm font-medium ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>
+        {value || 'Not provided'}
+      </dd>
+    </div>
+  );
+
+  return (
+    <div className="max-w-5xl mx-auto space-y-8">
+      {/* Header with Profile Photo */}
+      <div className="flex items-center gap-6">
+        <div className="relative">
+          {formData.profilePhoto ? (
+            <img
+              src={URL.createObjectURL(formData.profilePhoto)}
+              alt="Profile"
+              className="w-32 h-32 rounded-full object-cover border-4 border-white dark:border-gray-800 shadow-lg"
+            />
+          ) : (
+            <div className={`w-32 h-32 rounded-full flex items-center justify-center ${
+              theme === 'light' ? 'bg-gray-100' : 'bg-gray-700'
+            }`}>
+              <FiUser className="w-16 h-16 text-gray-400" />
+            </div>
+          )}
+        </div>
+        <div>
+          <h2 className={`text-2xl font-bold ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>
+            {formData.fullName || 'Employee Name'}
+          </h2>
+          <p className={`text-sm ${theme === 'light' ? 'text-gray-600' : 'text-gray-300'}`}>
+            {formData.designation} • {formData.department}
+          </p>
+        </div>
+      </div>
+
+      {/* Personal Information */}
+      <Section icon={FiUser} title="Personal Information">
+        <Field label="Full Name" value={formData.fullName} />
+        <Field label="Alias Name" value={formData.aliasName} />
+        <Field label="Father's Name" value={formData.fatherName} />
+        <Field label="Mother's Name" value={formData.motherName} />
+        <Field label="Date of Birth" value={formData.dateOfBirth} />
+        <Field label="Gender" value={formData.gender} />
+        <Field label="Marital Status" value={formData.maritalStatus} />
+        <Field label="Qualification" value={formData.qualification} />
+      </Section>
+
+      {/* Contact Information */}
+      <Section icon={FiPhone} title="Contact Information">
+        <Field label="Mobile 1" value={formData.mobile1} />
+        <Field label="Mobile 2" value={formData.mobile2} />
+        <Field label="Email Address" value={formData.email} />
+      </Section>
+
+      {/* Address Information */}
+      <Section icon={FiMapPin} title="Address Information">
+        <div className="col-span-full">
+          <Field label="Permanent Address" value={formData.permanentAddress} />
+          <Field label="Permanent Pin Code" value={formData.permanentPinCode} />
+        </div>
+        <div className="col-span-full">
+          <Field label="Correspondence Address" value={formData.correspondenceAddress} />
+          <Field label="Correspondence Pin Code" value={formData.correspondencePinCode} />
+        </div>
+        <Field label="Post Office" value={formData.postOffice} />
+        <Field label="District" value={formData.district} />
+      </Section>
+
+      {/* Professional Information */}
+      <Section icon={FiBriefcase} title="Professional Information">
+        <Field label="Location" value={formData.location} />
+        <Field label="Department" value={formData.department} />
+        <Field label="Designation" value={formData.designation} />
+      </Section>
+
+      {/* Bank & Identity Information */}
+      <Section icon={FiCreditCard} title="Bank & Identity Information">
+        <Field label="Aadhaar Number" value={formData.aadhaarNo} />
+        <Field label="PAN Number" value={formData.panNo} />
+        <Field label="Bank Name" value={formData.bankName} />
+        <Field label="Branch Name" value={formData.branchName} />
+        <Field label="Account Number" value={formData.accountNo} />
+        <Field label="IFSC Code" value={formData.ifscCode} />
+      </Section>
+
+      {/* Dependent Family Details */}
+      <Section icon={FiUsers} title="Dependent Family Details">
+        {/* We'll need to implement the family details table here */}
+      </Section>
+
+      {/* Document Attachments */}
+      <Section icon={FiUsers} title="Document Attachments">
+        <div className="col-span-full grid grid-cols-3 gap-4">
+          {/* Aadhaar Card */}
+          <div className={`p-4 rounded-lg border ${
+            theme === 'light' ? 'border-gray-200' : 'border-gray-700'
+          }`}>
+            <h4 className={`text-sm font-medium mb-2 ${
+              theme === 'light' ? 'text-gray-900' : 'text-white'
+            }`}>Aadhaar Card</h4>
+            {formData.aadhaarCard && (
+              <img
+                src={URL.createObjectURL(formData.aadhaarCard)}
+                alt="Aadhaar Card"
+                className="w-full h-32 object-cover rounded-lg"
+              />
+            )}
+          </div>
+
+          {/* PAN Card */}
+          <div className={`p-4 rounded-lg border ${
+            theme === 'light' ? 'border-gray-200' : 'border-gray-700'
+          }`}>
+            <h4 className={`text-sm font-medium mb-2 ${
+              theme === 'light' ? 'text-gray-900' : 'text-white'
+            }`}>PAN Card</h4>
+            {formData.panCard && (
+              <img
+                src={URL.createObjectURL(formData.panCard)}
+                alt="PAN Card"
+                className="w-full h-32 object-cover rounded-lg"
+              />
+            )}
+          </div>
+        </div>
+      </Section>
+
+      {/* Submit Button */}
+      <div className="flex justify-end pt-6 border-t border-gray-200 dark:border-gray-700">
+        <button
+          className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 
+          transition-colors duration-200"
+        >
+          Submit Application
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export default Review; 

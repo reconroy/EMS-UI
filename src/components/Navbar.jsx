@@ -14,7 +14,7 @@ const Navbar = ({ onMenuClick }) => {
   };
 
   return (
-    <nav className="bg-black/40 backdrop-blur-xl border-b border-purple-500/20 p-4">
+    <nav className="bg-black/40 border-b border-purple-500/20 p-4">
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-4">
           <motion.button
@@ -29,7 +29,7 @@ const Navbar = ({ onMenuClick }) => {
             CUPL | EMS
           </h1>
         </div>
-        
+
         <div className="flex items-center space-x-4">
           <AnimatePresence mode="wait">
             <motion.button
@@ -41,16 +41,15 @@ const Navbar = ({ onMenuClick }) => {
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               onClick={toggleTheme}
-              className={`relative p-3 rounded-xl ${
-                theme === 'dark'
+              className={`relative p-3 rounded-xl ${theme === 'dark'
                   ? 'bg-gradient-to-r from-purple-900/50 to-purple-600/50 text-yellow-300'
                   : 'bg-gradient-to-r from-purple-100 to-pink-100 text-purple-600'
-              }`}
+                }`}
             >
               {theme === 'dark' ? <FiSun className="w-5 h-5" /> : <FiMoon className="w-5 h-5" />}
             </motion.button>
           </AnimatePresence>
-          
+
           <UserMenu onLogout={handleLogout} />
         </div>
       </div>
