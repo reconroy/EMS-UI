@@ -13,7 +13,7 @@ import {
 
 const ClearableInput = ({ value, onChange, placeholder, className, required = false }) => {
   const theme = useThemeStore((state) => state.theme);
-  
+
   return (
     <div className="relative">
       <input
@@ -28,11 +28,10 @@ const ClearableInput = ({ value, onChange, placeholder, className, required = fa
         <button
           type="button"
           onClick={() => onChange('')}
-          className={`absolute right-3 top-1/2 transform -translate-y-1/2 ${
-            theme === 'dark' 
-              ? 'text-purple-400 hover:text-purple-300' 
-              : 'text-slate-400 hover:text-slate-600'
-          } transition-colors`}
+          className={`absolute right-3 top-1/2 transform -translate-y-1/2 ${theme === 'dark'
+              ? 'text-purple-400 hover:text-purple-300'
+              : 'text-blue-400 hover:text-blue-600'
+            } transition-colors`}
         >
           <FiX className="w-4 h-4" />
         </button>
@@ -73,11 +72,10 @@ const Roles = () => {
       header: 'Status',
       enableSorting: true,
       cell: ({ row }) => (
-        <span className={`px-3 py-1 rounded-full text-sm ${
-          row.original.status === 'Active'
+        <span className={`px-3 py-1 rounded-full text-sm ${row.original.status === 'Active'
             ? 'bg-green-100 text-green-800'
             : 'bg-red-100 text-red-800'
-        }`}>
+          }`}>
           {row.original.status}
         </span>
       ),
@@ -88,7 +86,7 @@ const Roles = () => {
       enableSorting: false,
       cell: () => (
         <div className="flex justify-end gap-3">
-          <button className="text-purple-400 hover:text-purple-300 transition-colors">
+          <button className={theme === 'dark' ? "text-purple-400 hover:text-purple-300" : "text-blue-400 hover:text-blue-300"}>
             <FiEdit2 className="w-5 h-5" />
           </button>
           <button className="text-red-400 hover:text-red-300 transition-colors">
@@ -97,17 +95,17 @@ const Roles = () => {
         </div>
       ),
     },
-  ], []);
+  ], [theme]);
 
   // Fuzzy search function
   const fuzzyFilter = (row, columnId, value, addMeta) => {
     const itemValue = row.getValue(columnId);
     if (itemValue == null) {
-      const rowValues = columns.map(col => 
+      const rowValues = columns.map(col =>
         col.accessorKey ? row.getValue(col.accessorKey) : null
       );
-      return rowValues.some(val => 
-        val != null && 
+      return rowValues.some(val =>
+        val != null &&
         String(val).toLowerCase().includes(value.toLowerCase())
       );
     }
@@ -136,19 +134,19 @@ const Roles = () => {
 
   const cardClass = theme === 'dark'
     ? 'bg-black/40 backdrop-blur-xl border-purple-500/20'
-    : 'bg-white border-gray-200 shadow-sm';
+    : 'bg-white border-blue-200 shadow-sm';
 
   const textClass = theme === 'dark'
     ? 'text-purple-100'
-    : 'text-gray-700';
+    : 'text-blue-700';
 
   const subTextClass = theme === 'dark'
     ? 'text-purple-300'
-    : 'text-gray-500';
+    : 'text-blue-500';
 
   const inputClass = theme === 'dark'
     ? 'bg-purple-900/20 border-purple-500/20 text-purple-100 placeholder-purple-400'
-    : 'bg-slate-50 border-slate-200 text-slate-600 placeholder-slate-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500';
+    : 'bg-blue-50 border-blue-200 text-blue-600 placeholder-blue-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500';
 
   const buttonClass = theme === 'dark'
     ? 'bg-purple-600 hover:bg-purple-700 text-white'
@@ -175,11 +173,10 @@ const Roles = () => {
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
       >
-        <h1 className={`text-3xl font-bold ${
-          theme === 'dark' 
+        <h1 className={`text-3xl font-bold ${theme === 'dark'
             ? 'text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400'
             : 'text-blue-700'
-        }`}>
+          }`}>
           Roles Management
         </h1>
         <p className={`${subTextClass} mt-1`}>Create and manage user roles</p>
@@ -226,7 +223,7 @@ const Roles = () => {
                 onChange={() => setIsActive(!isActive)}
                 className="sr-only peer"
               />
-              <div className={`w-11 h-6 ${theme === 'dark' ? 'bg-purple-900/20' : 'bg-gray-200'} peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-purple-300 after:border-purple-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600`}></div>
+              <div className={`w-11 h-6 ${theme === 'dark' ? 'bg-purple-900/20' : 'bg-blue-200'} peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-purple-300 after:border-purple-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all ${theme === 'dark' ? 'peer-checked:bg-purple-600' : 'peer-checked:bg-blue-600'}`}></div>
             </label>
             <span className={`text-sm ${textClass}`}>
               {isActive ? 'Active' : 'Inactive'}
@@ -252,16 +249,15 @@ const Roles = () => {
       >
         <div className="flex items-center gap-4">
           <div className="flex-1 relative">
-            <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400" />
+            <FiSearch className={`absolute left-3 top-1/2 transform -translate-y-1/2 ${theme === 'dark' ? 'text-purple-400' : 'text-blue-400'}`} />
             <ClearableInput
               value={globalFilter ?? ''}
               onChange={setGlobalFilter}
               placeholder="Search roles..."
-              className={`w-full pl-10 pr-10 py-2 rounded-lg border ${
-                theme === 'dark'
+              className={`w-full pl-10 pr-10 py-2 rounded-lg border ${theme === 'dark'
                   ? 'bg-purple-900/20 border-purple-500/20 text-purple-100 placeholder-purple-400'
-                  : 'bg-white border-gray-200 text-gray-900 placeholder-gray-400'
-              }`}
+                  : 'bg-blue-50 border-blue-200 text-blue-900 placeholder-blue-400'
+                }`}
             />
           </div>
         </div>
@@ -269,14 +265,13 @@ const Roles = () => {
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className={`border-b ${theme === 'dark' ? 'border-purple-500/20' : 'border-gray-200'}`}>
+              <tr className={`border-b ${theme === 'dark' ? 'border-purple-500/20' : 'border-blue-200'}`}>
                 {table.getHeaderGroups().map(headerGroup => (
                   headerGroup.headers.map(header => (
                     <th
                       key={header.id}
-                      className={`px-6 py-4 text-left ${textClass} ${
-                        header.column.getCanSort() ? 'cursor-pointer select-none' : ''
-                      }`}
+                      className={`px-6 py-4 text-left ${textClass} ${header.column.getCanSort() ? 'cursor-pointer select-none' : ''
+                        }`}
                       onClick={header.column.getToggleSortingHandler()}
                     >
                       <div className="flex items-center gap-2">
@@ -310,17 +305,17 @@ const Roles = () => {
                   key={row.id}
                   className={`
                     border-b last:border-b-0 
-                    ${index % 2 === 0 
-                      ? theme === 'dark' 
-                        ? 'bg-purple-900/10' 
-                        : 'bg-gray-100'
+                    ${index % 2 === 0
+                      ? theme === 'dark'
+                        ? 'bg-purple-900/10'
+                        : 'bg-blue-50'
                       : theme === 'dark'
                         ? 'bg-transparent'
                         : 'bg-white'
                     }
-                    hover:${theme === 'dark' ? 'bg-purple-900/20' : 'bg-purple-50'} 
+                    hover:${theme === 'dark' ? 'bg-purple-900/20' : 'bg-blue-100'} 
                     transition-colors
-                    ${theme === 'dark' ? 'border-purple-500/20' : 'border-gray-200'}
+                    ${theme === 'dark' ? 'border-purple-500/20' : 'border-blue-200'}
                   `}
                 >
                   {row.getVisibleCells().map(cell => (
@@ -345,11 +340,10 @@ const Roles = () => {
               onChange={e => {
                 table.setPageSize(Number(e.target.value));
               }}
-              className={`px-3 py-1.5 rounded-lg border ${
-                theme === 'dark'
-                  ? 'bg-purple-900/20 border-purple-500/20 text-purple-100'
-                  : 'bg-white border-gray-200 text-gray-900'
-              }`}
+              className={`px-3 py-1.5 rounded-lg border ${theme === 'dark'
+                  ? 'bg-purple-900/20 border-purple-500/20 text-purple-100 [&>option]:bg-purple-900'
+                  : 'bg-blue-50 border-blue-200 text-blue-900'
+                }`}
             >
               {[10, 20, 30, 40, 50].map(pageSize => (
                 <option key={pageSize} value={pageSize}>
@@ -366,22 +360,20 @@ const Roles = () => {
             <button
               onClick={() => table.previousPage()}
               disabled={!table.getCanPreviousPage()}
-              className={`px-3 py-1.5 rounded-lg border ${
-                theme === 'dark'
+              className={`px-3 py-1.5 rounded-lg border ${theme === 'dark'
                   ? 'bg-purple-900/20 border-purple-500/20 text-purple-100'
-                  : 'bg-white border-gray-200 text-gray-900'
-              } disabled:opacity-50`}
+                  : 'bg-blue-50 border-blue-200 text-blue-900'
+                } disabled:opacity-50`}
             >
               Previous
             </button>
             <button
               onClick={() => table.nextPage()}
               disabled={!table.getCanNextPage()}
-              className={`px-3 py-1.5 rounded-lg border ${
-                theme === 'dark'
+              className={`px-3 py-1.5 rounded-lg border ${theme === 'dark'
                   ? 'bg-purple-900/20 border-purple-500/20 text-purple-100'
-                  : 'bg-white border-gray-200 text-gray-900'
-              } disabled:opacity-50`}
+                  : 'bg-blue-50 border-blue-200 text-blue-900'
+                } disabled:opacity-50`}
             >
               Next
             </button>

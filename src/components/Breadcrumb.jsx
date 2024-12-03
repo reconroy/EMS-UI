@@ -48,11 +48,11 @@ const Breadcrumb = () => {
     <motion.div 
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
-      className={`mb-6 flex items-center space-x-2 ${theme === 'dark' ? 'text-purple-300' : 'text-gray-600'}`}
+      className={`mb-6 flex items-center space-x-2 ${theme === 'dark' ? 'text-purple-300' : 'text-blue-600'}`}
     >
       <Link 
         to="/"
-        className={`hover:${theme === 'dark' ? 'text-purple-100' : 'text-gray-900'} transition-colors duration-200`}
+        className={`hover:${theme === 'dark' ? 'text-purple-100' : 'text-blue-900'} transition-colors duration-200`}
       >
         Home
       </Link>
@@ -64,13 +64,13 @@ const Breadcrumb = () => {
           <div key={item.path} className="flex items-center space-x-2">
             <FiChevronRight className="w-4 h-4" />
             {isLast ? (
-              <span className={`font-medium ${theme === 'dark' ? 'text-purple-100' : 'text-gray-900'}`}>
+              <span className={`font-medium ${theme === 'dark' ? 'text-purple-100' : 'text-blue-900'}`}>
                 {item.display}
               </span>
             ) : (
               <Link
                 to={item.path}
-                className={`hover:${theme === 'dark' ? 'text-purple-100' : 'text-gray-900'} transition-colors duration-200`}
+                className={`hover:${theme === 'dark' ? 'text-purple-100' : 'text-blue-900'} transition-colors duration-200`}
               >
                 {item.display}
               </Link>
@@ -82,4 +82,4 @@ const Breadcrumb = () => {
   );
 };
 
-export default Breadcrumb; 
+export default Breadcrumb;

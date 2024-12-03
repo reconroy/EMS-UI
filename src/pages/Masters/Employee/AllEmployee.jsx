@@ -101,19 +101,19 @@ const AllEmployee = () => {
       enableSorting: false,
       cell: () => (
         <div className="flex justify-end gap-3">
-          <button className="text-purple-400 hover:text-purple-300 transition-colors">
+          <button className={`${theme === 'dark' ? 'text-purple-400 hover:text-purple-300' : 'text-blue-400 hover:text-blue-300'} transition-colors`}>
             <FiEdit2 className="w-5 h-5" />
           </button>
           <button className="text-red-400 hover:text-red-300 transition-colors">
             <FiTrash2 className="w-5 h-5" />
           </button>
-          <button className="text-purple-400 hover:text-purple-300 transition-colors">
+          <button className={`${theme === 'dark' ? 'text-purple-400 hover:text-purple-300' : 'text-blue-400 hover:text-blue-300'} transition-colors`}>
             <FiMoreVertical className="w-5 h-5" />
           </button>
         </div>
       ),
     },
-  ], []);
+  ], [theme]);
 
   // Enhanced fuzzy search function
   const fuzzyFilter = (row, columnId, value, addMeta) => {
@@ -228,11 +228,11 @@ const AllEmployee = () => {
 
   const buttonClass = theme === 'dark'
     ? 'bg-purple-600 hover:bg-purple-700 text-white'
-    : 'bg-purple-600 hover:bg-purple-700 text-white';
+    : 'bg-blue-600 hover:bg-blue-700 text-white';
 
   const secondaryButtonClass = theme === 'dark'
     ? 'bg-purple-900/40 hover:bg-purple-900/60 text-purple-300'
-    : 'bg-purple-50 hover:bg-purple-100 text-purple-600';
+    : 'bg-blue-50 hover:bg-blue-100 text-blue-600';
 
   const handleExport = () => {
     // Prepare the data for export (excluding the actions column)
@@ -279,7 +279,7 @@ const AllEmployee = () => {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <h1 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
+          <h1 className={`text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r ${theme === 'dark' ? 'from-purple-400 to-pink-400' : 'from-blue-400 to-blue-600'}`}>
             Employee Management
           </h1>
           <p className={`${subTextClass} mt-1`}>Manage and view all employee records</p>
@@ -289,7 +289,7 @@ const AllEmployee = () => {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           onClick={() => navigate('/masters/employee/add')}
-          className={`px-4 py-2.5 rounded-lg flex items-center gap-2 ${buttonClass}`}
+          className={`px-4 py-2.5 rounded-lg flex items-center gap-2 ${theme === 'dark' ? buttonClass : 'bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-200'}`}
         >
           <FiPlus className="w-5 h-5" />
           <span>Add Employee</span>
@@ -305,7 +305,7 @@ const AllEmployee = () => {
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="flex-1">
             <div className="relative">
-              <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400" />
+              <FiSearch className={`absolute left-3 top-1/2 transform -translate-y-1/2 ${theme === 'dark' ? 'text-purple-400' : 'text-blue-400'}`} />
               <input
                 type="text"
                 placeholder="Search employees..."
@@ -321,7 +321,7 @@ const AllEmployee = () => {
                 <button
                   onClick={() => setGlobalFilter('')}
                   className={`absolute right-3 top-1/2 transform -translate-y-1/2 ${
-                    theme === 'dark' ? 'text-purple-400 hover:text-purple-300' : 'text-gray-400 hover:text-gray-500'
+                    theme === 'dark' ? 'text-purple-400 hover:text-purple-300' : 'text-blue-400 hover:text-blue-500'
                   } transition-colors`}
                 >
                   <FiX className="w-4 h-4" />
@@ -432,12 +432,12 @@ const AllEmployee = () => {
                     ${index % 2 === 0 
                       ? theme === 'dark' 
                         ? 'bg-purple-900/10' 
-                        : 'bg-gray-100'
+                        : 'bg-blue-50'
                       : theme === 'dark'
                         ? 'bg-transparent'
                         : 'bg-white'
                     }
-                    hover:${theme === 'dark' ? 'bg-purple-900/20' : 'bg-purple-50'} 
+                    hover:${theme === 'dark' ? 'bg-purple-900/20' : 'bg-blue-100'} 
                     transition-colors
                     ${theme === 'dark' ? 'border-purple-500/20' : 'border-gray-200'}
                   `}
@@ -536,4 +536,4 @@ const AllEmployee = () => {
   );
 };
 
-export default AllEmployee; 
+export default AllEmployee;

@@ -60,7 +60,7 @@ const AddEmployee = () => {
 
   const cardClass = theme === 'dark'
     ? 'bg-black/40 backdrop-blur-xl border-purple-500/20'
-    : 'bg-white border-gray-200 shadow-lg';
+    : 'bg-white border-blue-200 shadow-lg';
 
   return (
     <div className="space-y-6">
@@ -72,7 +72,7 @@ const AddEmployee = () => {
         >
           <button
             onClick={handleCancel}
-            className="flex items-center gap-2 text-gray-800 dark:text-purple-300 hover:text-black dark:hover:text-purple-600"
+            className={`flex items-center gap-2 ${theme === 'dark' ? 'text-purple-600' : 'text-blue-600'}`}
           >
             <FiArrowLeft className="w-5 h-5" />
             <span>Cancel</span>
@@ -85,7 +85,7 @@ const AddEmployee = () => {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               onClick={handlePrevious}
-              className="px-4 py-2 rounded-lg border border-purple-600 text-purple-600"
+              className={`px-4 py-2 rounded-lg border ${theme === 'dark' ? 'border-purple-600 text-purple-600' : 'border-blue-600 text-blue-600'}`}
             >
               Previous
             </motion.button>
@@ -96,7 +96,7 @@ const AddEmployee = () => {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               onClick={handleNext}
-              className="px-4 py-2 rounded-lg bg-purple-600 hover:bg-purple-700 text-white"
+              className={`px-4 py-2 rounded-lg ${theme === 'dark' ? 'bg-purple-600 hover:bg-purple-700' : 'bg-blue-600 hover:bg-blue-700'} text-white`}
             >
               Next
             </motion.button>
@@ -129,7 +129,7 @@ const AddEmployee = () => {
               id="confirmDetails"
               checked={isConfirmed}
               onChange={(e) => setIsConfirmed(e.target.checked)}
-              className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
+              className={`w-4 h-4 ${theme === 'dark' ? 'text-purple-600' : 'text-blue-600'} border-gray-300 rounded focus:ring-purple-500`}
             />
             <label 
               htmlFor="confirmDetails" 
@@ -146,7 +146,7 @@ const AddEmployee = () => {
             whileTap={isConfirmed ? { scale: 0.98 } : {}}
             className={`w-full py-3 px-4 rounded-lg flex items-center justify-center gap-2 
               ${isConfirmed 
-                ? 'bg-purple-600 hover:bg-purple-700 text-white cursor-pointer' 
+                ? `${theme === 'dark' ? 'bg-purple-600 hover:bg-purple-700' : 'bg-blue-600 hover:bg-blue-700'} text-white cursor-pointer` 
                 : 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
               } transition-colors duration-200`}
           >
@@ -159,4 +159,4 @@ const AddEmployee = () => {
   );
 };
 
-export default AddEmployee; 
+export default AddEmployee;

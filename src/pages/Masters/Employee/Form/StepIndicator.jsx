@@ -1,8 +1,10 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { FiCheck } from 'react-icons/fi';
+import { useThemeStore } from '../../../../store/themeStore';
 
 const StepIndicator = ({ currentStep }) => {
+    const theme = useThemeStore((state) => state.theme);
   const steps = [
     { number: 1, label: 'Basic Details' },
     { number: 2, label: 'Documents' },
@@ -24,7 +26,7 @@ const StepIndicator = ({ currentStep }) => {
                   ${currentStep > step.number 
                     ? 'bg-green-500' // Completed step
                     : currentStep === step.number 
-                      ? 'bg-purple-600' // Current step
+                      ? theme === 'light' ? 'bg-blue-600' : 'bg-purple-600' // Current step
                       : 'bg-gray-500'   // Upcoming step
                   }`}
               >
@@ -36,7 +38,7 @@ const StepIndicator = ({ currentStep }) => {
               </motion.div>
               <span className={`mt-2 text-sm ${
                 currentStep === step.number 
-                  ? 'text-purple-600 font-medium' 
+                  ? theme === 'light' ? 'text-blue-600 font-medium' : 'text-purple-600 font-medium'
                   : currentStep > step.number
                     ? 'text-green-500 font-medium'
                     : 'text-gray-500'
@@ -54,7 +56,7 @@ const StepIndicator = ({ currentStep }) => {
                   animate={{ 
                     width: currentStep > step.number ? '100%' : '0%'
                   }}
-                  className="absolute inset-0 bg-green-500"
+                  className={`absolute inset-0 bg-green-500`}
                 ></motion.div>
               </div>
             )}
@@ -65,4 +67,4 @@ const StepIndicator = ({ currentStep }) => {
   );
 };
 
-export default StepIndicator; 
+export default StepIndicator;

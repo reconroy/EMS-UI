@@ -18,19 +18,19 @@ const Designation = () => {
 
   const cardClass = theme === 'dark'
     ? 'bg-black/40 backdrop-blur-xl border-purple-500/20'
-    : 'bg-white border-gray-200 shadow-lg';
+    : 'bg-blue-50 border-blue-200 shadow-lg';
 
   const textClass = theme === 'dark'
     ? 'text-purple-100'
-    : 'text-gray-900';
+    : 'text-blue-900';
 
   const subTextClass = theme === 'dark'
     ? 'text-purple-300'
-    : 'text-gray-600';
+    : 'text-blue-600';
 
   const inputClass = theme === 'dark'
     ? 'bg-purple-900/20 border-purple-500/20 text-purple-100 placeholder-purple-400'
-    : 'bg-white border-gray-200 text-gray-900 placeholder-gray-400';
+    : 'bg-white border-blue-200 text-blue-900 placeholder-blue-400';
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -47,7 +47,7 @@ const Designation = () => {
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
       >
-        <h1 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
+        <h1 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-blue-600">
           Designation Management
         </h1>
         <p className={`${subTextClass} mt-1`}>Create and manage job designations</p>
@@ -98,7 +98,7 @@ const Designation = () => {
                 onChange={() => setIsActive(!isActive)}
                 className="sr-only peer"
               />
-              <div className={`w-11 h-6 ${theme === 'dark' ? 'bg-purple-900/20' : 'bg-gray-200'} peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-purple-300 after:border-purple-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600`}></div>
+              <div className={`w-11 h-6 ${theme === 'dark' ? 'bg-purple-900/20' : 'bg-blue-200'} peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-blue-300 after:border-blue-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600`}></div>
             </label>
             <span className={`text-sm ${textClass}`}>
               {isActive ? 'Active' : 'Inactive'}
@@ -110,7 +110,7 @@ const Designation = () => {
               className={`px-4 py-2 rounded-lg flex items-center gap-2 ${
                 theme === 'dark'
                   ? 'bg-purple-600 hover:bg-purple-700 text-white'
-                  : 'bg-purple-600 hover:bg-purple-700 text-white'
+                  : 'bg-blue-600 hover:bg-blue-700 text-white'
               }`}
             >
               <FiSave className="w-5 h-5" />
@@ -129,7 +129,7 @@ const Designation = () => {
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className={`border-b ${theme === 'dark' ? 'border-purple-500/20' : 'border-gray-200'}`}>
+              <tr className={`border-b ${theme === 'dark' ? 'border-purple-500/20' : 'border-blue-200'}`}>
                 <th className={`px-6 py-4 text-left ${textClass}`}>Designation Name</th>
                 <th className={`px-6 py-4 text-left ${textClass}`}>Description</th>
                 <th className={`px-6 py-4 text-left ${textClass}`}>Status</th>
@@ -140,8 +140,8 @@ const Designation = () => {
               {designations.map((designation) => (
                 <tr
                   key={designation.id}
-                  className={`border-b last:border-b-0 hover:${theme === 'dark' ? 'bg-purple-900/20' : 'bg-purple-50'} transition-colors ${
-                    theme === 'dark' ? 'border-purple-500/20' : 'border-gray-200'
+                  className={`border-b last:border-b-0 hover:${theme === 'dark' ? 'bg-purple-900/20' : 'bg-blue-100'} transition-colors ${
+                    theme === 'dark' ? 'border-purple-500/20' : 'border-blue-200'
                   }`}
                 >
                   <td className={`px-6 py-4 ${textClass}`}>{designation.name}</td>
@@ -157,7 +157,7 @@ const Designation = () => {
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex justify-end gap-3">
-                      <button className="text-purple-400 hover:text-purple-300 transition-colors">
+                      <button className="text-blue-400 hover:text-blue-300 transition-colors">
                         <FiEdit2 className="w-5 h-5" />
                       </button>
                       <button className="text-red-400 hover:text-red-300 transition-colors">
@@ -175,4 +175,4 @@ const Designation = () => {
   );
 };
 
-export default Designation; 
+export default Designation;

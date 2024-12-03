@@ -80,9 +80,9 @@ const DocumentUpload = ({ formData, setFormData, onNext, onPrevious }) => {
                     : 'bg-gray-800 shadow-none'
                 } ${
                 isDraggedOver
-                    ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20'
+                    ? theme === 'light' ? 'border-blue-500 bg-blue-50' : 'border-purple-500 bg-purple-900/20'
                     : file
-                        ? 'border-green-500/50'
+                        ? theme === 'light' ? 'border-blue-500/50' : 'border-green-500/50'
                         : 'border-dashed border-gray-300 dark:border-gray-600'
                 }`}>
                 <div className="flex gap-6">
@@ -111,20 +111,20 @@ const DocumentUpload = ({ formData, setFormData, onNext, onPrevious }) => {
                                 <div className="space-y-4">
                                     <div className={`flex flex-col items-center justify-center p-6 rounded-lg transition-colors ${
                                         isDraggedOver
-                                            ? 'bg-purple-100 dark:bg-purple-900/30'
+                                            ? theme === 'light' ? 'bg-blue-100' : 'bg-purple-900/30'
                                             : theme === 'light' 
                                                 ? 'bg-gray-100 hover:bg-gray-200'
                                                 : 'bg-gray-700/50'
                                         }`}>
                                         <FiUploadCloud className={`w-10 h-10 mb-2 ${
                                             isDraggedOver 
-                                                ? 'text-purple-500' 
+                                                ? theme === 'light' ? 'text-blue-500' : 'text-purple-500'
                                                 : theme === 'light'
                                                     ? 'text-gray-700'
                                                     : 'text-gray-400'
                                             }`} />
                                         <div className="text-sm text-center">
-                                            <span className="text-purple-600 dark:text-purple-400">Click to upload</span>
+                                            <span className={theme === 'light' ? 'text-blue-600' : 'text-purple-400'}>Click to upload</span>
                                             {' '}<span className={theme === 'light' ? 'text-gray-700' : 'text-gray-400'}>or drag and drop</span>
                                         </div>
                                         <p className={`text-xs mt-1 ${
@@ -145,15 +145,15 @@ const DocumentUpload = ({ formData, setFormData, onNext, onPrevious }) => {
                             </h4>
                             <ul className="text-xs space-y-1 text-gray-500 dark:text-gray-400">
                                 <li className="flex items-center gap-1">
-                                    <FiCheckCircle className="text-green-500" />
+                                    <FiCheckCircle className={theme === 'light' ? 'text-blue-500' : 'text-green-500'} />
                                     Clear, readable image
                                 </li>
                                 <li className="flex items-center gap-1">
-                                    <FiCheckCircle className="text-green-500" />
+                                    <FiCheckCircle className={theme === 'light' ? 'text-blue-500' : 'text-green-500'} />
                                     File size less than 5MB
                                 </li>
                                 <li className="flex items-center gap-1">
-                                    <FiCheckCircle className="text-green-500" />
+                                    <FiCheckCircle className={theme === 'light' ? 'text-blue-500' : 'text-green-500'} />
                                     JPG, PNG formats accepted
                                 </li>
                             </ul>
@@ -209,7 +209,7 @@ const DocumentUpload = ({ formData, setFormData, onNext, onPrevious }) => {
                                 setSelectedPDF(file);
                                 setIsPDFModalOpen(true);
                             }}
-                            className="px-3 py-1.5 bg-purple-600 text-white rounded-lg text-sm"
+                            className={`px-3 py-1.5 ${theme === 'light' ? 'bg-blue-600' : 'bg-purple-600'} text-white rounded-lg text-sm`}
                         >
                             Preview PDF
                         </button>
@@ -317,7 +317,7 @@ const DocumentUpload = ({ formData, setFormData, onNext, onPrevious }) => {
                             id="terms"
                             checked={acceptedTerms}
                             onChange={(e) => setAcceptedTerms(e.target.checked)}
-                            className="w-4 h-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                            className={`w-4 h-4 rounded border-gray-300 ${theme === 'light' ? 'text-blue-600 focus:ring-blue-500' : 'text-purple-600 focus:ring-purple-500'}`}
                         />
                         <label 
                             htmlFor="terms" 
@@ -341,7 +341,7 @@ const DocumentUpload = ({ formData, setFormData, onNext, onPrevious }) => {
                             disabled={!acceptedTerms || !areAllRequiredFilesUploaded()}
                             className={`w-full max-w-xs px-6 py-2 rounded-lg transition-colors flex items-center justify-center gap-2
                             ${acceptedTerms && areAllRequiredFilesUploaded()
-                                ? 'bg-purple-600 hover:bg-purple-700 text-white' 
+                                ? theme === 'light' ? 'bg-blue-600 hover:bg-blue-700 text-white' : 'bg-purple-600 hover:bg-purple-700 text-white'
                                 : 'bg-gray-300 text-gray-500 cursor-not-allowed dark:bg-gray-700'}`}
                         >
                             Proceed to Review

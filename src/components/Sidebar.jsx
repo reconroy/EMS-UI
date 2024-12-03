@@ -16,6 +16,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useThemeStore } from '../store/themeStore';
 import { useState } from 'react';
 import logo from './../assets/logo/EMS-Logo-1.png';
+import logoLight from './../assets/logo/EMS-Light.png';
 const Sidebar = ({ onClose, isMobile, isCollapsed, onCollapse }) => {
   const location = useLocation();
   const theme = useThemeStore((state) => state.theme);
@@ -162,7 +163,7 @@ const Sidebar = ({ onClose, isMobile, isCollapsed, onCollapse }) => {
                 exit={{ opacity: 0 }}
                 className="w-full flex justify-center"
               >
-                <img src={logo} alt="CUPL | EMS" className="h-12 w-auto" />
+                <img src={theme === 'dark' ? logo : logoLight} alt="CUPL | EMS" className="h-12 w-auto" />
               </motion.div>
             )}
           </AnimatePresence>
@@ -173,14 +174,14 @@ const Sidebar = ({ onClose, isMobile, isCollapsed, onCollapse }) => {
               onClick={() => onCollapse(!isCollapsed)}
               className={`transition-all duration-200 ${
                 isCollapsed 
-                  ? 'mx-auto w-8 h-8 rounded-full bg-purple-600/20 flex items-center justify-center hover:bg-purple-600/30' 
+                  ? `mx-auto w-8 h-8 rounded-full ${theme === 'dark' ? 'bg-purple-600/20 hover:bg-purple-600/30' : 'bg-blue-500/20 hover:bg-blue-500/30'} flex items-center justify-center` 
                   : ''
               }`}
             >
               {isCollapsed ? (
-                <FiChevronRight className="w-6 h-6 text-purple-300 hover:text-purple-100" />
+                <FiChevronRight className={`w-6 h-6 ${theme === 'dark' ? 'text-purple-300 hover:text-purple-100' : 'text-blue-500 hover:text-blue-700'}`} />
               ) : (
-                <FiChevronLeft className="w-6 h-6 text-purple-300 hover:text-purple-100" />
+                <FiChevronLeft className={`w-6 h-6 ${theme === 'dark' ? 'text-purple-300 hover:text-purple-100' : 'text-blue-500 hover:text-blue-700'}`} />
               )}
             </motion.button>
           )}

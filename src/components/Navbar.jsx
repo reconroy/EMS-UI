@@ -25,7 +25,7 @@ const Navbar = ({ onMenuClick }) => {
           >
             <FiMenu className="w-6 h-6" />
           </motion.button>
-          <h1 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
+          <h1 className={`text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r ${theme === 'dark' ? 'from-purple-400 to-pink-400' : 'from-blue-400 to-blue-600'}`}>
             CUPL | EMS
           </h1>
         </div>
@@ -43,7 +43,7 @@ const Navbar = ({ onMenuClick }) => {
               onClick={toggleTheme}
               className={`relative p-3 rounded-xl ${theme === 'dark'
                   ? 'bg-gradient-to-r from-purple-900/50 to-purple-600/50 text-yellow-300'
-                  : 'bg-gradient-to-r from-purple-100 to-pink-100 text-purple-600'
+                  : 'bg-gradient-to-r from-blue-100 to-blue-200 text-blue-600'
                 }`}
             >
               {theme === 'dark' ? <FiSun className="w-5 h-5" /> : <FiMoon className="w-5 h-5" />}
