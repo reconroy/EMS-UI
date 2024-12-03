@@ -10,6 +10,7 @@ const DocumentUpload = ({ formData, setFormData, onNext, onPrevious }) => {
         profilePhoto: null,
         aadhaarCard: null,
         panCard: null,
+        passbook: null
     });
     const [dragOver, setDragOver] = useState(null);
     const [selectedPDF, setSelectedPDF] = useState(null);
@@ -19,13 +20,21 @@ const DocumentUpload = ({ formData, setFormData, onNext, onPrevious }) => {
     const handleFileChange = (e, fileType) => {
         const file = e.target.files[0];
         if (file) {
-            // Check file type
-            const isImage = file.type.startsWith('image/');
-            const isPDF = file.type === 'application/pdf';
-
-            if (!isImage && !isPDF) {
-                alert('Please upload only images or PDF files');
-                return;
+            // Check file type based on document type
+            if (fileType === 'profilePhoto') {
+                if (!file.type.startsWith('image/')) {
+                    alert('Please upload only image files for profile photo');
+                    return;
+                }
+            } else {
+                // For Aadhaar, PAN, and Passbook
+                const isImage = file.type.startsWith('image/');
+                const isPDF = file.type === 'application/pdf';
+                
+                if (!isImage && !isPDF) {
+                    alert('Please upload only images or PDF files');
+                    return;
+                }
             }
 
             // Check file size (5MB limit)
@@ -34,9 +43,9 @@ const DocumentUpload = ({ formData, setFormData, onNext, onPrevious }) => {
                 return;
             }
 
-            setFiles((prevFiles) => ({
+            setFiles(prevFiles => ({
                 ...prevFiles,
-                [fileType]: file,
+                [fileType]: file
             }));
         }
     };
@@ -60,7 +69,7 @@ const DocumentUpload = ({ formData, setFormData, onNext, onPrevious }) => {
         }));
     };
 
-    const renderUploadZone = (fileType, label, description) => {
+    const renderUploadZone = (fileType, label, description, isRequired) => {
         const file = files[fileType];
         const isDraggedOver = dragOver === fileType;
 
@@ -242,39 +251,63 @@ const DocumentUpload = ({ formData, setFormData, onNext, onPrevious }) => {
     };
 
     // Add this function to check if all required files are uploaded
-    const areAllFilesUploaded = () => {
+    const areAllRequiredFilesUploaded = () => {
         return files.profilePhoto && files.aadhaarCard && files.panCard;
     };
 
     return (
         <>
-            <div className="max-w-3xl mx-auto space-y-8">
+            <div className="max-w-7xl mx-auto space-y-8 px-4">
                 <div>
-                    <h3 className={`text-xl font-semibold mb-1 ${theme === 'light' ? 'text-gray-900' : 'text-white'
-                        }`}>
+                    <h3 className={`text-xl font-semibold mb-1 ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>
                         Document Upload
                     </h3>
                     <p className="text-sm text-gray-500 dark:text-gray-400">
-                        Please upload clear, readable images of the following documents
+                        Please upload clear, readable documents in the specified format
                     </p>
                 </div>
 
-                <div className="space-y-6">
-                    {renderUploadZone(
-                        'profilePhoto',
-                        'Profile Photo',
-                        'Upload a recent passport-size photograph'
-                    )}
-                    {renderUploadZone(
-                        'aadhaarCard',
-                        'Aadhaar Card',
-                        'Upload front side of your Aadhaar card'
-                    )}
-                    {renderUploadZone(
-                        'panCard',
-                        'PAN Card',
-                        'Upload front side of your PAN card'
-                    )}
+                {/* Flex Container for 2x2 Layout */}
+                <div className="flex flex-wrap gap-6">
+                    {/* Profile Photo */}
+                    <div className="flex-1 basis-[calc(50%-12px)] min-w-[300px]">
+                        {renderUploadZone(
+                            'profilePhoto',
+                            'Profile Photo',
+                            'Upload a recent passport-size photograph (Image only)',
+                            true
+                        )}
+                    </div>
+
+                    {/* Aadhaar Card */}
+                    <div className="flex-1 basis-[calc(50%-12px)] min-w-[300px]">
+                        {renderUploadZone(
+                            'aadhaarCard',
+                            'Aadhaar Card',
+                            'Upload front side of your Aadhaar card (Image or PDF)',
+                            true
+                        )}
+                    </div>
+
+                    {/* PAN Card */}
+                    <div className="flex-1 basis-[calc(50%-12px)] min-w-[300px]">
+                        {renderUploadZone(
+                            'panCard',
+                            'PAN Card',
+                            'Upload front side of your PAN card (Image or PDF)',
+                            true
+                        )}
+                    </div>
+
+                    {/* Passbook */}
+                    <div className="flex-1 basis-[calc(50%-12px)] min-w-[300px]">
+                        {renderUploadZone(
+                            'passbook',
+                            'Bank Passbook',
+                            'Upload first page of passbook (Image or PDF)',
+                            false
+                        )}
+                    </div>
                 </div>
 
                 <div className="space-y-4 pt-6 border-t border-gray-200 dark:border-gray-700">
@@ -294,20 +327,20 @@ const DocumentUpload = ({ formData, setFormData, onNext, onPrevious }) => {
                         </label>
                     </div>
 
-                    {/* Show error message if files are missing */}
-                    {!areAllFilesUploaded() && (
+                    {/* Show error message if required files are missing */}
+                    {!areAllRequiredFilesUploaded() && (
                         <div className="flex items-center gap-2 text-red-500 text-sm">
                             <FiAlertCircle className="w-4 h-4" />
                             <span>Please upload all required documents</span>
                         </div>
                     )}
 
-                    <div>
+                    <div className="flex justify-center">
                         <button
                             onClick={onNext}
-                            disabled={!acceptedTerms || !areAllFilesUploaded()}
-                            className={`w-full px-6 py-2 rounded-lg transition-colors flex items-center justify-center gap-2
-                            ${acceptedTerms && areAllFilesUploaded()
+                            disabled={!acceptedTerms || !areAllRequiredFilesUploaded()}
+                            className={`w-full max-w-xs px-6 py-2 rounded-lg transition-colors flex items-center justify-center gap-2
+                            ${acceptedTerms && areAllRequiredFilesUploaded()
                                 ? 'bg-purple-600 hover:bg-purple-700 text-white' 
                                 : 'bg-gray-300 text-gray-500 cursor-not-allowed dark:bg-gray-700'}`}
                         >
