@@ -302,11 +302,11 @@ const DocumentUpload = ({ formData, setFormData, onNext, onPrevious }) => {
                         </div>
                     )}
 
-                    <div className="flex justify-center">
+                    <div>
                         <button
                             onClick={onNext}
                             disabled={!acceptedTerms || !areAllFilesUploaded()}
-                            className={`w-full max-w-xs px-6 py-2 rounded-lg transition-colors flex items-center justify-center gap-2
+                            className={`w-full px-6 py-2 rounded-lg transition-colors flex items-center justify-center gap-2
                             ${acceptedTerms && areAllFilesUploaded()
                                 ? 'bg-purple-600 hover:bg-purple-700 text-white' 
                                 : 'bg-gray-300 text-gray-500 cursor-not-allowed dark:bg-gray-700'}`}
