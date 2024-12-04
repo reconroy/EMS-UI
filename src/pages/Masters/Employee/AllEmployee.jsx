@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useThemeStore } from '../../../store/themeStore';
 import { useNavigate } from 'react-router-dom';
@@ -27,7 +27,8 @@ import {
   FiChevronRight,
   FiX
 } from 'react-icons/fi';
-import employeeData from '../../../data/dummyEmployees.json';
+import API, { endpoints } from '../../../services/api';
+import EmployeeDetailsModal from '../../../components/Modals/EmployeeDetailsModal';
 import * as XLSX from 'xlsx';
 
 const AllEmployee = () => {
@@ -41,57 +42,82 @@ const AllEmployee = () => {
   });
   const [columnFilters, setColumnFilters] = useState([]);
   const [showFilters, setShowFilters] = useState(false);
+  const [employees, setEmployees] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedEmployee, setSelectedEmployee] = useState(null);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
+
+  // Fetch employees
+  useEffect(() => {
+    fetchEmployees();
+  }, []);
+
+  const fetchEmployees = async () => {
+    try {
+      setLoading(true);
+      const response = await API.get(endpoints.employees.list);
+      setEmployees(response.data);
+    } catch (error) {
+      console.error('Error fetching employees:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleViewDetails = (employee) => {
+    setSelectedEmployee(employee);
+    setShowDetailsModal(true);
+  };
 
   // Get unique values for filter dropdowns
   const getUniqueValues = (data, key) => {
     return [...new Set(data.map(item => item[key]))].sort();
   };
 
-  // Replace the data constant with:
-  const data = useMemo(() => employeeData.employees, []);
+  const data = useMemo(() => employees, [employees]);
   
-  const departments = useMemo(() => getUniqueValues(data, 'department'), [data]);
-  const locations = useMemo(() => getUniqueValues(data, 'location'), [data]);
-  const designations = useMemo(() => getUniqueValues(data, 'designation'), [data]);
-  const statuses = useMemo(() => getUniqueValues(data, 'status'), [data]);
+  const departments = useMemo(() => getUniqueValues(data, 'departmentID'), [data]);
+  const roles = useMemo(() => getUniqueValues(data, 'roleID'), [data]);
+  const locations = useMemo(() => getUniqueValues(data, 'workingLocation'), [data]);
+  const statuses = useMemo(() => ['Active', 'Inactive'], []);
 
   const columns = useMemo(() => [
     {
-      accessorKey: 'id',
+      accessorKey: 'empID',
       header: 'Employee ID',
       enableSorting: true,
     },
     {
-      accessorKey: 'name',
+      accessorFn: (row) => `${row.firstName} ${row.lastName}`,
       header: 'Name',
       enableSorting: true,
     },
     {
-      accessorKey: 'department',
+      accessorKey: 'departmentID',
       header: 'Department',
       enableSorting: true,
     },
     {
-      accessorKey: 'designation',
+      accessorKey: 'roleID',
       header: 'Designation',
       enableSorting: true,
     },
     {
-      accessorKey: 'location',
+      accessorKey: 'workingLocation',
       header: 'Location',
       enableSorting: true,
     },
     {
-      accessorKey: 'status',
+      accessorKey: 'isActive',
       header: 'Status',
       enableSorting: true,
       cell: ({ row }) => (
         <span className={`px-3 py-1 rounded-full text-sm ${
-          row.original.status === 'Active'
+          row.original.isActive
             ? 'bg-green-100 text-green-800'
             : 'bg-red-100 text-red-800'
         }`}>
-          {row.original.status}
+          {row.original.isActive ? 'Active' : 'Inactive'}
         </span>
       ),
     },
@@ -99,7 +125,7 @@ const AllEmployee = () => {
       id: 'actions',
       header: 'Actions',
       enableSorting: false,
-      cell: () => (
+      cell: ({ row }) => (
         <div className="flex justify-end gap-3">
           <button className={`${theme === 'dark' ? 'text-purple-400 hover:text-purple-300' : 'text-blue-400 hover:text-blue-300'} transition-colors`}>
             <FiEdit2 className="w-5 h-5" />
@@ -107,7 +133,10 @@ const AllEmployee = () => {
           <button className="text-red-400 hover:text-red-300 transition-colors">
             <FiTrash2 className="w-5 h-5" />
           </button>
-          <button className={`${theme === 'dark' ? 'text-purple-400 hover:text-purple-300' : 'text-blue-400 hover:text-blue-300'} transition-colors`}>
+          <button 
+            onClick={() => handleViewDetails(row.original)}
+            className={`${theme === 'dark' ? 'text-purple-400 hover:text-purple-300' : 'text-blue-400 hover:text-blue-300'} transition-colors`}
+          >
             <FiMoreVertical className="w-5 h-5" />
           </button>
         </div>
@@ -532,6 +561,17 @@ const AllEmployee = () => {
           </div>
         </div>
       </motion.div>
+
+      {/* Add the modal */}
+      {showDetailsModal && selectedEmployee && (
+        <EmployeeDetailsModal
+          employee={selectedEmployee}
+          onClose={() => {
+            setShowDetailsModal(false);
+            setSelectedEmployee(null);
+          }}
+        />
+      )}
     </div>
   );
 };
