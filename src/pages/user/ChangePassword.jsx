@@ -15,15 +15,15 @@ const ChangePassword = () => {
 
     const cardClass = theme === 'dark'
         ? 'bg-black/40 backdrop-blur-xl border-purple-500/20'
-        : 'bg-white border-gray-200 shadow-lg';
+        : 'bg-white border-blue-200 shadow-lg';
 
     const textClass = theme === 'dark'
         ? 'text-purple-100'
-        : 'text-gray-900';
+        : 'text-blue-900';
 
     const inputClass = theme === 'dark'
         ? 'bg-purple-900/20 border-purple-500/20 text-purple-100 focus:border-purple-400'
-        : 'bg-gray-50 border-gray-200 text-gray-900 focus:border-purple-500';
+        : 'bg-blue-50 border-blue-200 text-blue-900 focus:border-blue-500';
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -47,14 +47,14 @@ const ChangePassword = () => {
             >
                 <button
                     onClick={() => navigate('/settings')}
-                    className={`mb-6 ${theme === 'dark' ? 'text-purple-400' : 'text-purple-600'} hover:underline`}
+                    className={`mb-6 ${theme === 'dark' ? 'text-purple-400' : 'text-blue-600'} hover:underline`}
                 >
                     ← Back to Settings
                 </button>
 
                 <div className={`border rounded-lg p-8 ${cardClass}`}>
                     <div className="flex items-center space-x-4 mb-8">
-                        <FiLock className={`text-2xl ${theme === 'dark' ? 'text-purple-400' : 'text-purple-600'}`} />
+                        <FiLock className={`text-2xl ${theme === 'dark' ? 'text-purple-400' : 'text-blue-600'}`} />
                         <h1 className={`text-2xl font-bold ${textClass}`}>Change Password</h1>
                     </div>
 
@@ -86,7 +86,7 @@ const ChangePassword = () => {
                                 className={`px-4 py-2 rounded-lg ${
                                     theme === 'dark'
                                         ? 'bg-purple-900/20 text-purple-300 hover:bg-purple-800/30'
-                                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                        : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
                                 } transition-colors`}
                             >
                                 Cancel
@@ -96,7 +96,7 @@ const ChangePassword = () => {
                                 className={`px-4 py-2 rounded-lg ${
                                     theme === 'dark'
                                         ? 'bg-purple-600 hover:bg-purple-700 text-white'
-                                        : 'bg-purple-600 hover:bg-purple-700 text-white'
+                                        : 'bg-blue-600 hover:bg-blue-700 text-white'
                                 } transition-colors`}
                             >
                                 Update Password
