@@ -167,6 +167,7 @@ const BasicDetails = ({ formData, setFormData, onNext }) => {
         <InputField label="Location" name="location" required={isRequiredFields} />
         <InputField label="Department" name="department" required={isRequiredFields} />
         <InputField label="Designation" name="designation" required={isRequiredFields} />
+        <InputField label="Date of Joining" name="dateOfJoining" type="date" required={isRequiredFields} />
       </FormSection>
 
       {/* Identity Information */}

@@ -92,8 +92,12 @@ const Sidebar = ({ onClose, isMobile, isCollapsed, onCollapse }) => {
                       onClick={onClose}
                       className={`flex items-center space-x-2 py-2 px-3 rounded-lg transition-colors duration-200 ${
                         location.pathname === subItem.path
-                          ? "bg-blue-600 text-white"
-                          : theme === 'dark' ? "text-purple-300 hover:bg-purple-900/50" : "text-blue-700 hover:bg-blue-100"
+                          ? theme === 'dark' 
+                            ? "bg-purple-600 text-white" 
+                            : "bg-blue-600 text-white"
+                          : theme === 'dark' 
+                            ? "text-purple-300 hover:bg-purple-900/50" 
+                            : "text-blue-700 hover:bg-blue-100"
                       }`}
                     >
                       {subItem.icon}
@@ -115,8 +119,12 @@ const Sidebar = ({ onClose, isMobile, isCollapsed, onCollapse }) => {
             onClick={onClose}
             className={`flex items-center ${!isMobile && isCollapsed ? 'justify-center' : 'space-x-3'} p-3 rounded-lg transition-colors duration-200 ${
               location.pathname === item.path
-                ? "bg-blue-600 text-white"
-                : theme === 'dark' ? "text-purple-300 hover:bg-purple-900/50" : "text-blue-700 hover:bg-blue-100"
+                ? theme === 'dark'
+                  ? "bg-purple-600 text-white"
+                  : "bg-blue-600 text-white"
+                : theme === 'dark' 
+                  ? "text-purple-300 hover:bg-purple-900/50" 
+                  : "text-blue-700 hover:bg-blue-100"
             }`}
           >
             {item.icon}

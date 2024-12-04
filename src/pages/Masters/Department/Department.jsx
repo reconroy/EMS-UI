@@ -54,7 +54,7 @@ const Department = () => {
       </motion.div>
 
       {/* Add Department Form */}
-      <motion.div
+      <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className={`border rounded-lg p-6 ${cardClass}`}
@@ -98,7 +98,19 @@ const Department = () => {
                 onChange={() => setIsActive(!isActive)}
                 className="sr-only peer"
               />
-              <div className={`w-11 h-6 ${theme === 'dark' ? 'bg-purple-900/20' : 'bg-blue-200'} peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-blue-300 after:border-blue-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600`}></div>
+              <div className={`w-11 h-6 ${
+                theme === 'dark' 
+                  ? 'bg-purple-900/20' 
+                  : 'bg-blue-200'
+              } peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:${
+                theme === 'dark'
+                  ? 'bg-purple-400 after:border-purple-400'
+                  : 'bg-blue-300 after:border-blue-300'
+              } after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:${
+                theme === 'dark'
+                  ? 'bg-purple-600'
+                  : 'bg-blue-600'
+              }`}></div>
             </label>
             <span className={`text-sm ${textClass}`}>
               {isActive ? 'Active' : 'Inactive'}
