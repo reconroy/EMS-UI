@@ -6,6 +6,7 @@ import { FiArrowLeft, FiSave, FiArrowRight } from 'react-icons/fi';
 
 import StepIndicator from './Form/StepIndicator';
 import BasicDetails from './Form/BasicDetails';
+import BankDetails from './Form/BankDetails';
 import DocumentUpload from './Form/DocumentUpload';
 import Review from './Form/Review';
 
@@ -26,7 +27,7 @@ const AddEmployee = () => {
   }, [formData]);
 
   const handleNext = () => {
-    setCurrentStep(prev => Math.min(prev + 1, 3));
+    setCurrentStep(prev => Math.min(prev + 1, 4));
   };
 
   const handlePrevious = () => {
@@ -48,10 +49,12 @@ const AddEmployee = () => {
   const renderStepContent = () => {
     switch (currentStep) {
       case 1:
-        return <BasicDetails formData={formData} setFormData={setFormData} />;
+        return <BasicDetails formData={formData} setFormData={setFormData} onNext={handleNext} />;
       case 2:
-        return <DocumentUpload formData={formData} setFormData={setFormData} />;
+        return <BankDetails formData={formData} setFormData={setFormData} onNext={handleNext} onPrevious={handlePrevious} />;
       case 3:
+        return <DocumentUpload formData={formData} setFormData={setFormData} onNext={handleNext} onPrevious={handlePrevious} />;
+      case 4:
         return <Review formData={formData} />;
       default:
         return null;
@@ -91,7 +94,7 @@ const AddEmployee = () => {
             </motion.button>
           )}
 
-          {currentStep < 3 && (
+          {currentStep < 4 && (
             <motion.button
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -117,7 +120,7 @@ const AddEmployee = () => {
       </motion.div>
 
       {/* Confirmation and Submit Section */}
-      {currentStep === 3 && (
+      {currentStep === 4 && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
