@@ -90,7 +90,7 @@ const AddEmployee = () => {
               Previous
             </motion.button>
           )}
-          
+
           {currentStep < 3 && (
             <motion.button
               initial={{ opacity: 0, x: 20 }}
@@ -131,8 +131,8 @@ const AddEmployee = () => {
               onChange={(e) => setIsConfirmed(e.target.checked)}
               className={`w-4 h-4 ${theme === 'dark' ? 'text-purple-600' : 'text-blue-600'} border-gray-300 rounded focus:ring-purple-500`}
             />
-            <label 
-              htmlFor="confirmDetails" 
+            <label
+              htmlFor="confirmDetails"
               className="text-sm text-gray-900 dark:text-gray-300"
             >
               I confirm that all the details provided are correct and accurate.
@@ -145,8 +145,8 @@ const AddEmployee = () => {
             whileHover={isConfirmed ? { scale: 1.02 } : {}}
             whileTap={isConfirmed ? { scale: 0.98 } : {}}
             className={`w-full py-3 px-4 rounded-lg flex items-center justify-center gap-2 
-              ${isConfirmed 
-                ? `${theme === 'dark' ? 'bg-purple-600 hover:bg-purple-700' : 'bg-blue-600 hover:bg-blue-700'} text-white cursor-pointer` 
+              ${isConfirmed
+                ? `${theme === 'dark' ? 'bg-purple-600 hover:bg-purple-700' : 'bg-blue-600 hover:bg-blue-700'} text-white cursor-pointer`
                 : 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
               } transition-colors duration-200`}
           >
