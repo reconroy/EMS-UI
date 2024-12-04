@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useThemeStore } from '../../../store/themeStore';
+import Notification from '../../../components/Notification';
 import { 
   FiSave, 
   FiEdit2, 
@@ -21,7 +22,7 @@ import {
 
 const ClearableInput = ({ value, onChange, placeholder, className, required = false }) => {
   const theme = useThemeStore((state) => state.theme);
-
+  
   return (
     <div className="relative">
       <input
@@ -46,6 +47,19 @@ const Department = () => {
   const [editingDept, setEditingDept] = useState(null);
   const [loading, setLoading] = useState(false);
   const [originalDeptName, setOriginalDeptName] = useState('');
+  const [notification, setNotification] = useState({
+    show: false,
+    type: 'success',
+    message: '',
+  });
+
+  const showNotification = (type, message) => {
+    setNotification({
+      show: true,
+      type,
+      message,
+    });
+  };
 
   // Fetch departments
   useEffect(() => {
@@ -59,6 +73,7 @@ const Department = () => {
       setDepartments(response.data);
     } catch (error) {
       console.error('Error fetching departments:', error);
+      showNotification('error', 'Failed to fetch departments. Please refresh the page.');
     } finally {
       setLoading(false);
     }
@@ -66,23 +81,42 @@ const Department = () => {
 
   const handleSubmit = async (e) => {
     if (e) e.preventDefault();
+
+    // Validate department name
+    if (!deptName.trim()) {
+      showNotification('warning', 'Please enter a department name');
+      return;
+    }
+
     if (!editingDept) {
       try {
         setLoading(true);
+        showNotification('processing', 'Creating new department...');
         await API.post('/Departments', {
           deptID: 0,
           deptName: deptName
         });
         await fetchDepartments();
         setDeptName('');
+        showNotification('success', 'Department created successfully!');
       } catch (error) {
         console.error('Error creating department:', error);
+        showNotification('error', 'Failed to create department. Please try again.');
       } finally {
         setLoading(false);
       }
     } else {
+      // Don't make API call if name hasn't changed
+      if (deptName === originalDeptName) {
+        setEditingDept(null);
+        setDeptName('');
+        setOriginalDeptName('');
+        return;
+      }
+
       try {
         setLoading(true);
+        showNotification('processing', 'Updating department...');
         await API.put(`/Departments/${editingDept.deptID}`, {
           deptID: editingDept.deptID,
           deptName: deptName
@@ -91,8 +125,10 @@ const Department = () => {
         setDeptName('');
         setEditingDept(null);
         setOriginalDeptName('');
+        showNotification('success', 'Department updated successfully!');
       } catch (error) {
         console.error('Error updating department:', error);
+        showNotification('error', 'Failed to update department. Please try again.');
       } finally {
         setLoading(false);
       }
@@ -402,6 +438,16 @@ const Department = () => {
           </div>
         </div>
       </motion.div>
+
+      {/* Add Notification component */}
+      <Notification
+        show={notification.show}
+        type={notification.type}
+        message={notification.message}
+        position="top-right"
+        autoClose={5000}
+        onClose={() => setNotification(prev => ({ ...prev, show: false }))}
+      />
     </div>
   );
 };
