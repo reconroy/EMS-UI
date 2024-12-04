@@ -1,7 +1,8 @@
-import { useState, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useThemeStore } from '../../../store/themeStore';
-import { FiSave, FiTrash2, FiEdit2, FiSearch, FiFilter, FiChevronUp, FiChevronDown, FiX } from 'react-icons/fi';
+import { FiSave, FiTrash2, FiEdit2, FiSearch, FiChevronUp, FiChevronDown, FiX } from 'react-icons/fi';
+import API from '../../../services/api';
 import {
   useReactTable,
   getCoreRowModel,
@@ -24,18 +25,6 @@ const ClearableInput = ({ value, onChange, placeholder, className, required = fa
         required={required}
         className={`transition-colors duration-200 ${className}`}
       />
-      {value && (
-        <button
-          type="button"
-          onClick={() => onChange('')}
-          className={`absolute right-3 top-1/2 transform -translate-y-1/2 ${theme === 'dark'
-              ? 'text-purple-400 hover:text-purple-300'
-              : 'text-blue-400 hover:text-blue-600'
-            } transition-colors`}
-        >
-          <FiX className="w-4 h-4" />
-        </button>
-      )}
     </div>
   );
 };
@@ -43,79 +32,156 @@ const ClearableInput = ({ value, onChange, placeholder, className, required = fa
 const Roles = () => {
   const theme = useThemeStore((state) => state.theme);
   const [roleName, setRoleName] = useState('');
-  const [description, setDescription] = useState('');
-  const [isActive, setIsActive] = useState(true);
+  const [roles, setRoles] = useState([]);
   const [globalFilter, setGlobalFilter] = useState('');
   const [sorting, setSorting] = useState([]);
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
+  const [editingRole, setEditingRole] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [originalRoleName, setOriginalRoleName] = useState('');
 
-  // Dummy data for demonstration
-  const data = useMemo(() => [
-    { id: 1, name: 'Admin', description: 'Full system access', status: 'Active' },
-    { id: 2, name: 'Manager', description: 'Department level access', status: 'Active' },
-    { id: 3, name: 'Employee', description: 'Basic access', status: 'Active' },
-  ], []);
+  // Fetch roles
+  useEffect(() => {
+    fetchRoles();
+  }, []);
+
+  const fetchRoles = async () => {
+    try {
+      setLoading(true);
+      const response = await API.get('/Roles');
+      setRoles(response.data);
+    } catch (error) {
+      console.error('Error fetching roles:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      setLoading(true);
+      if (editingRole) {
+        // Update existing role
+        await API.put(`/Roles/${editingRole.roleId}`, {
+          roleId: editingRole.roleId,
+          roleName: roleName
+        });
+      } else {
+        // Create new role
+        await API.post('/Roles', {
+          roleId: 0,
+          roleName: roleName
+        });
+      }
+      // Refresh roles list
+      await fetchRoles();
+      // Reset form
+      setRoleName('');
+      setEditingRole(null);
+    } catch (error) {
+      console.error('Error saving role:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleEdit = (role) => {
+    setEditingRole(role);
+    setRoleName(role.roleName);
+    setOriginalRoleName(role.roleName);
+  };
+
+  const handleDelete = async (roleId) => {
+    if (window.confirm('Are you sure you want to delete this role?')) {
+      try {
+        setLoading(true);
+        await API.delete(`/Roles/${roleId}`);
+        await fetchRoles();
+      } catch (error) {
+        console.error('Error deleting role:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
 
   const columns = useMemo(() => [
     {
-      accessorKey: 'name',
+      accessorKey: 'roleId',
+      header: 'Role ID',
+      enableSorting: true,
+    },
+    {
+      accessorKey: 'roleName',
       header: 'Role Name',
       enableSorting: true,
-    },
-    {
-      accessorKey: 'description',
-      header: 'Description',
-      enableSorting: true,
-    },
-    {
-      accessorKey: 'status',
-      header: 'Status',
-      enableSorting: true,
-      cell: ({ row }) => (
-        <span className={`px-3 py-1 rounded-full text-sm ${row.original.status === 'Active'
-            ? 'bg-green-100 text-green-800'
-            : 'bg-red-100 text-red-800'
-          }`}>
-          {row.original.status}
-        </span>
-      ),
+      cell: ({ row }) => {
+        const isEditing = editingRole?.roleId === row.original.roleId;
+        return isEditing ? (
+          <input
+            type="text"
+            value={roleName}
+            onChange={(e) => setRoleName(e.target.value)}
+            className={`w-full px-2 py-1 rounded border ${
+              theme === 'dark' 
+                ? 'bg-purple-900/20 border-purple-500/20 text-purple-100' 
+                : 'bg-blue-50 border-blue-200 text-blue-900'
+            }`}
+            autoFocus
+          />
+        ) : (
+          <span>{row.original.roleName}</span>
+        );
+      }
     },
     {
       id: 'actions',
-      header: 'Actions',
+      header: '',
       enableSorting: false,
-      cell: () => (
-        <div className="flex justify-end gap-3">
-          <button className={theme === 'dark' ? "text-purple-400 hover:text-purple-300" : "text-blue-400 hover:text-blue-300"}>
-            <FiEdit2 className="w-5 h-5" />
-          </button>
-          <button className="text-red-400 hover:text-red-300 transition-colors">
-            <FiTrash2 className="w-5 h-5" />
-          </button>
-        </div>
-      ),
-    },
-  ], [theme]);
+      cell: ({ row }) => {
+        const isEditing = editingRole?.roleId === row.original.roleId;
+        const hasChanged = roleName !== originalRoleName;
 
-  // Fuzzy search function
-  const fuzzyFilter = (row, columnId, value, addMeta) => {
-    const itemValue = row.getValue(columnId);
-    if (itemValue == null) {
-      const rowValues = columns.map(col =>
-        col.accessorKey ? row.getValue(col.accessorKey) : null
-      );
-      return rowValues.some(val =>
-        val != null &&
-        String(val).toLowerCase().includes(value.toLowerCase())
-      );
-    }
-    const searchValue = value.toLowerCase();
-    const itemString = String(itemValue).toLowerCase();
-    return itemString.includes(searchValue);
-  };
+        return (
+          <div className="flex justify-end gap-3">
+            {isEditing ? (
+              <>
+                {hasChanged && (
+                  <button 
+                    onClick={handleSubmit}
+                    className={theme === 'dark' ? "text-green-400 hover:text-green-300" : "text-green-600 hover:text-green-500"}
+                  >
+                    <FiSave className="w-5 h-5" />
+                  </button>
+                )}
+                <button 
+                  onClick={() => {
+                    setEditingRole(null);
+                    setRoleName('');
+                    setOriginalRoleName('');
+                  }}
+                  className="text-red-400 hover:text-red-300"
+                >
+                  <FiX className="w-5 h-5" />
+                </button>
+              </>
+            ) : (
+              <button 
+                onClick={() => handleEdit(row.original)}
+                className={theme === 'dark' ? "text-purple-400 hover:text-purple-300" : "text-blue-400 hover:text-blue-300"}
+              >
+                <FiEdit2 className="w-5 h-5" />
+              </button>
+            )}
+          </div>
+        );
+      },
+    },
+  ], [theme, editingRole, roleName, originalRoleName]);
 
   const table = useReactTable({
-    data,
+    data: roles,
     columns,
     state: {
       globalFilter,
@@ -129,7 +195,6 @@ const Roles = () => {
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    globalFilterFn: fuzzyFilter,
   });
 
   const cardClass = theme === 'dark'
@@ -152,20 +217,6 @@ const Roles = () => {
     ? 'bg-purple-600 hover:bg-purple-700 text-white'
     : 'bg-blue-600 hover:bg-blue-700 text-white';
 
-  const secondaryButtonClass = theme === 'dark'
-    ? 'bg-purple-900/40 hover:bg-purple-900/60 text-purple-100'
-    : 'bg-blue-50 hover:bg-blue-100 text-blue-700';
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Handle form submission
-    console.log({ roleName, description, status: isActive ? 'Active' : 'Inactive' });
-    // Reset form
-    setRoleName('');
-    setDescription('');
-    setIsActive(true);
-  };
-
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -174,80 +225,41 @@ const Roles = () => {
         animate={{ opacity: 1, y: 0 }}
       >
         <h1 className={`text-3xl font-bold ${theme === 'dark'
-            ? 'text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400'
-            : 'text-blue-700'
+          ? 'text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400'
+          : 'text-blue-700'
           }`}>
           Roles Management
         </h1>
         <p className={`${subTextClass} mt-1`}>Create and manage user roles</p>
       </motion.div>
 
-      {/* Add Role Form */}
+      {/* Add/Edit Role Form */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className={`border rounded-lg p-6 ${cardClass}`}
       >
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label htmlFor="roleName" className={`block mb-2 ${textClass}`}>
-                Role Name <span className="text-red-500">*</span>
-              </label>
-              <ClearableInput
-                value={roleName}
-                onChange={setRoleName}
-                placeholder="Enter role name"
-                required
-                className={`w-full px-4 pr-10 py-2 rounded-lg border ${inputClass}`}
-              />
-            </div>
-            <div>
-              <label htmlFor="description" className={`block mb-2 ${textClass}`}>
-                Description <span className={subTextClass}>(Optional)</span>
-              </label>
-              <ClearableInput
-                value={description}
-                onChange={setDescription}
-                placeholder="Enter role description"
-                className={`w-full px-4 pr-10 py-2 rounded-lg border ${inputClass}`}
-              />
-            </div>
-          </div>
-          <div className="flex items-center gap-4">
-            <label className={`block ${textClass}`}>Status:</label>
-            <label className="relative inline-flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                checked={isActive}
-                onChange={() => setIsActive(!isActive)}
-                className="sr-only peer"
-              />
-              <div className={`w-11 h-6 ${
-                theme === 'dark' 
-                  ? 'bg-purple-900/20' 
-                  : 'bg-blue-200'
-              } peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:${
-                theme === 'dark'
-                  ? 'bg-purple-400 after:border-purple-400'
-                  : 'bg-blue-300 after:border-blue-300'
-              } after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:${
-                theme === 'dark'
-                  ? 'bg-purple-600'
-                  : 'bg-blue-600'
-              }`}></div>
+          <div>
+            <label htmlFor="roleName" className={`block mb-2 ${textClass}`}>
+              Role Name <span className="text-red-500">*</span>
             </label>
-            <span className={`text-sm ${textClass}`}>
-              {isActive ? 'Active' : 'Inactive'}
-            </span>
+            <ClearableInput
+              value={roleName}
+              onChange={setRoleName}
+              placeholder="Enter role name"
+              required
+              className={`w-full px-4 pr-10 py-2 rounded-lg border ${inputClass}`}
+            />
           </div>
           <div className="flex justify-end">
             <button
               type="submit"
-              className={`px-4 py-2 rounded-lg flex items-center gap-2 ${buttonClass}`}
+              disabled={loading}
+              className={`px-4 py-2 rounded-lg flex items-center gap-2 ${buttonClass} ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
               <FiSave className="w-5 h-5" />
-              <span>Save Role</span>
+              <span>{editingRole ? 'Update' : 'Save'} Role</span>
             </button>
           </div>
         </form>
@@ -267,8 +279,8 @@ const Roles = () => {
               onChange={setGlobalFilter}
               placeholder="Search roles..."
               className={`w-full pl-10 pr-10 py-2 rounded-lg border ${theme === 'dark'
-                  ? 'bg-purple-900/20 border-purple-500/20 text-purple-100 placeholder-purple-400'
-                  : 'bg-blue-50 border-blue-200 text-blue-900 placeholder-blue-400'
+                ? 'bg-purple-900/20 border-purple-500/20 text-purple-100 placeholder-purple-400'
+                : 'bg-blue-50 border-blue-200 text-blue-900 placeholder-blue-400'
                 }`}
             />
           </div>
@@ -353,8 +365,8 @@ const Roles = () => {
                 table.setPageSize(Number(e.target.value));
               }}
               className={`px-3 py-1.5 rounded-lg border ${theme === 'dark'
-                  ? 'bg-purple-900/20 border-purple-500/20 text-purple-100 [&>option]:bg-purple-900'
-                  : 'bg-blue-50 border-blue-200 text-blue-900'
+                ? 'bg-purple-900/20 border-purple-500/20 text-purple-100 [&>option]:bg-purple-900'
+                : 'bg-blue-50 border-blue-200 text-blue-900'
                 }`}
             >
               {[10, 20, 30, 40, 50].map(pageSize => (
@@ -373,8 +385,8 @@ const Roles = () => {
               onClick={() => table.previousPage()}
               disabled={!table.getCanPreviousPage()}
               className={`px-3 py-1.5 rounded-lg border ${theme === 'dark'
-                  ? 'bg-purple-900/20 border-purple-500/20 text-purple-100'
-                  : 'bg-blue-50 border-blue-200 text-blue-900'
+                ? 'bg-purple-900/20 border-purple-500/20 text-purple-100'
+                : 'bg-blue-50 border-blue-200 text-blue-900'
                 } disabled:opacity-50`}
             >
               Previous
@@ -383,8 +395,8 @@ const Roles = () => {
               onClick={() => table.nextPage()}
               disabled={!table.getCanNextPage()}
               className={`px-3 py-1.5 rounded-lg border ${theme === 'dark'
-                  ? 'bg-purple-900/20 border-purple-500/20 text-purple-100'
-                  : 'bg-blue-50 border-blue-200 text-blue-900'
+                ? 'bg-purple-900/20 border-purple-500/20 text-purple-100'
+                : 'bg-blue-50 border-blue-200 text-blue-900'
                 } disabled:opacity-50`}
             >
               Next
