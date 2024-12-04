@@ -171,7 +171,9 @@ const Sidebar = ({ onClose, isMobile, isCollapsed, onCollapse }) => {
                 exit={{ opacity: 0 }}
                 className="w-full flex justify-center"
               >
-                <img src={theme === 'dark' ? logo : logoLight} alt="CUPL | EMS" className="h-12 w-auto" />
+                <Link to="/dashboard">
+                  <img src={theme === 'dark' ? logo : logoLight} alt="CUPL | EMS" className="h-12 w-auto" />
+                </Link>
               </motion.div>
             )}
           </AnimatePresence>
