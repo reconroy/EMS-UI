@@ -1,8 +1,10 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiX } from 'react-icons/fi';
+import { useThemeStore } from '../../store/themeStore';
 
 const PDFPreviewModal = ({ isOpen, onClose, file }) => {
+  const theme = useThemeStore((state) => state.theme);
   if (!isOpen) return null;
 
   return (
@@ -19,16 +21,24 @@ const PDFPreviewModal = ({ isOpen, onClose, file }) => {
           animate={{ scale: 1 }}
           exit={{ scale: 0.95 }}
           onClick={(e) => e.stopPropagation()}
-          className="relative w-full max-w-4xl h-[80vh] bg-white dark:bg-gray-800 rounded-xl shadow-xl"
+          className={`relative w-full max-w-4xl h-[80vh] rounded-xl shadow-xl ${
+            theme === 'light' ? 'bg-blue-50' : 'bg-gray-800'
+          }`}
         >
           {/* Header */}
-          <div className="flex items-center justify-between p-4 border-b dark:border-gray-700">
-            <h3 className="text-lg font-medium text-gray-900 dark:text-white">
+          <div className={`flex items-center justify-between p-4 border-b ${
+            theme === 'light' ? 'border-blue-200' : 'border-gray-700'
+          }`}>
+            <h3 className={`text-lg font-medium ${
+              theme === 'light' ? 'text-blue-900' : 'text-white'
+            }`}>
               Document Preview
             </h3>
             <button
               onClick={onClose}
-              className="p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+              className={`p-1 rounded-lg ${
+                theme === 'light' ? 'hover:bg-blue-100' : 'hover:bg-gray-700'
+              }`}
             >
               <FiX className="w-5 h-5" />
             </button>
@@ -48,4 +58,4 @@ const PDFPreviewModal = ({ isOpen, onClose, file }) => {
   );
 };
 
-export default PDFPreviewModal; 
+export default PDFPreviewModal;

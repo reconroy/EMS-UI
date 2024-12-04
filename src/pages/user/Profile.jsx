@@ -287,19 +287,39 @@ const Profile = () => {
 
   const cardClass = theme === 'dark' 
     ? 'bg-black/40 backdrop-blur-xl border-purple-500/20' 
-    : 'bg-white border-gray-200 shadow-lg';
+    : 'bg-white border-blue-200 shadow-lg';
 
   const textClass = theme === 'dark' 
     ? 'text-purple-100' 
-    : 'text-gray-900';
+    : 'text-blue-900';
 
   const subTextClass = theme === 'dark' 
     ? 'text-purple-300' 
-    : 'text-gray-600';
+    : 'text-blue-600';
 
   const inputClass = theme === 'dark'
     ? 'bg-purple-900/20 border-purple-500/20 text-purple-100 focus:border-purple-400'
-    : 'bg-gray-50 border-gray-200 text-gray-900 focus:border-purple-500';
+    : 'bg-blue-50 border-blue-200 text-blue-900 focus:border-blue-500';
+
+  const gradientClass = theme === 'dark'
+    ? 'from-purple-600 to-pink-500'
+    : 'from-blue-600 to-blue-400';
+
+  const nameGradientClass = theme === 'dark'
+    ? 'from-purple-400 to-pink-400'
+    : 'from-blue-600 to-blue-400';
+
+  const badgeClass = theme === 'dark'
+    ? 'bg-purple-900/20'
+    : 'bg-blue-50';
+
+  const buttonClass = theme === 'dark'
+    ? 'bg-purple-600/20 hover:bg-purple-600/30 text-purple-300'
+    : 'bg-blue-100 hover:bg-blue-200 text-blue-700';
+
+  const infoCardClass = theme === 'dark'
+    ? 'bg-purple-900/20'
+    : 'bg-blue-50';
 
   return (
     <div className="max-w-7xl mx-auto p-4 space-y-6">
@@ -310,7 +330,11 @@ const Profile = () => {
         className={`relative border rounded-2xl ${cardClass} overflow-hidden`}
       >
         {/* Banner Image - Hidden on mobile */}
-        <div className="hidden sm:block h-48 bg-gradient-to-r from-purple-600 via-pink-500 to-purple-600 relative overflow-hidden">
+        <div className={`hidden sm:block h-48 bg-gradient-to-r relative overflow-hidden ${
+          theme === 'dark'
+            ? 'from-purple-600 via-pink-500 to-purple-600'
+            : 'from-blue-500 via-blue-600 to-blue-700'
+        }`}>
           <div className="absolute inset-0 bg-grid-pattern opacity-20" />
         </div>
 
@@ -320,7 +344,11 @@ const Profile = () => {
             {/* Profile Image - Adjusted positioning for mobile */}
             <div className="sm:-mt-16 flex justify-center pt-6 sm:pt-0">
               <div className="relative group">
-                <div className="w-40 h-40 rounded-full border-4 border-purple-500/20 overflow-hidden bg-black/40 backdrop-blur-xl">
+                <div className={`w-40 h-40 rounded-full border-4 ${
+                  theme === 'dark' 
+                    ? 'border-purple-500/20' 
+                    : 'border-blue-200'
+                } overflow-hidden bg-black/40 backdrop-blur-xl`}>
                   <motion.img 
                     src={profileImage} 
                     alt="Profile" 
@@ -331,7 +359,11 @@ const Profile = () => {
                 </div>
                 <button 
                   onClick={handleImageClick}
-                  className="absolute bottom-0 right-0 p-2 rounded-full bg-purple-600 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-purple-700"
+                  className={`absolute bottom-0 right-0 p-2 rounded-full ${
+                    theme === 'dark'
+                      ? 'bg-purple-600 hover:bg-purple-700'
+                      : 'bg-blue-600 hover:bg-blue-700'
+                  } text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200`}
                 >
                   <FiCamera className="w-4 h-4" />
                 </button>
@@ -358,7 +390,7 @@ const Profile = () => {
                       className={`text-3xl font-bold w-full rounded-lg border p-2 ${inputClass}`}
                     />
                   ) : (
-                    <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400">
+                    <h1 className={`text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r ${nameGradientClass}`}>
                       {profile.name}
                     </h1>
                   )}
@@ -422,7 +454,11 @@ const Profile = () => {
                     href={`https://${url}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={`text-purple-400 hover:text-purple-300 transition-colors`}
+                    className={`${
+                      theme === 'dark'
+                        ? 'text-purple-400 hover:text-purple-300'
+                        : 'text-blue-400 hover:text-blue-300'
+                    } transition-colors`}
                   >
                     {platform === 'github' && <FiGithub className="w-5 h-5" />}
                     {platform === 'linkedin' && <FiLinkedin className="w-5 h-5" />}
@@ -451,7 +487,7 @@ const Profile = () => {
                 className={`px-3 py-1 rounded-full text-sm ${
                   theme === 'dark'
                     ? 'bg-purple-900/20 text-purple-300'
-                    : 'bg-purple-100 text-purple-700'
+                    : 'bg-blue-100 text-blue-700'
                 }`}
               >
                 {skill}

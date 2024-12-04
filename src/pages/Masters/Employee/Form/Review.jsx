@@ -49,12 +49,12 @@ const Review = ({ formData }) => {
   const Section = ({ icon: Icon, title, children }) => (
     <div className={`p-6 rounded-xl border ${
       theme === 'light' 
-        ? 'bg-white border-gray-200' 
+        ? 'bg-white border-blue-200' 
         : 'bg-gray-800 border-gray-700'
     }`}>
       <div className="flex items-center gap-2 mb-4">
-        <Icon className={`w-5 h-5 ${theme === 'light' ? 'text-gray-700' : 'text-gray-300'}`} />
-        <h3 className={`text-lg font-medium ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>
+        <Icon className={`w-5 h-5 ${theme === 'light' ? 'text-blue-700' : 'text-gray-300'}`} />
+        <h3 className={`text-lg font-medium ${theme === 'light' ? 'text-blue-900' : 'text-white'}`}>
           {title}
         </h3>
       </div>
@@ -66,10 +66,10 @@ const Review = ({ formData }) => {
 
   const Field = ({ label, value }) => (
     <div className="space-y-1">
-      <dt className={`text-sm ${theme === 'light' ? 'text-gray-500' : 'text-gray-400'}`}>
+      <dt className={`text-sm ${theme === 'light' ? 'text-blue-500' : 'text-gray-400'}`}>
         {label}
       </dt>
-      <dd className={`text-sm font-medium ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>
+      <dd className={`text-sm font-medium ${theme === 'light' ? 'text-blue-900' : 'text-white'}`}>
         {value || 'Not provided'}
       </dd>
     </div>
@@ -88,17 +88,17 @@ const Review = ({ formData }) => {
             />
           ) : (
             <div className={`w-32 h-32 rounded-full flex items-center justify-center ${
-              theme === 'light' ? 'bg-gray-100' : 'bg-gray-700'
+              theme === 'light' ? 'bg-blue-100' : 'bg-gray-700'
             }`}>
-              <FiUser className="w-16 h-16 text-gray-400" />
+              <FiUser className="w-16 h-16 text-blue-400" />
             </div>
           )}
         </div>
         <div>
-          <h2 className={`text-2xl font-bold ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>
+          <h2 className={`text-2xl font-bold ${theme === 'light' ? 'text-blue-900' : 'text-white'}`}>
             {formData.fullName || 'Employee Name'}
           </h2>
-          <p className={`text-sm ${theme === 'light' ? 'text-gray-600' : 'text-gray-300'}`}>
+          <p className={`text-sm ${theme === 'light' ? 'text-blue-600' : 'text-gray-300'}`}>
             {formData.designation} • {formData.department}
           </p>
         </div>
@@ -164,10 +164,10 @@ const Review = ({ formData }) => {
         <div className="col-span-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {/* Aadhaar Card */}
           <div className={`p-4 rounded-lg border ${
-            theme === 'light' ? 'border-gray-200' : 'border-gray-700'
+            theme === 'light' ? 'border-blue-200' : 'border-gray-700'
           }`}>
             <h4 className={`text-sm font-medium mb-2 ${
-              theme === 'light' ? 'text-gray-900' : 'text-white'
+              theme === 'light' ? 'text-blue-900' : 'text-white'
             }`}>Aadhaar Card</h4>
             {formData.aadhaarCard && (
               <img
@@ -180,10 +180,10 @@ const Review = ({ formData }) => {
 
           {/* PAN Card */}
           <div className={`p-4 rounded-lg border ${
-            theme === 'light' ? 'border-gray-200' : 'border-gray-700'
+            theme === 'light' ? 'border-blue-200' : 'border-gray-700'
           }`}>
             <h4 className={`text-sm font-medium mb-2 ${
-              theme === 'light' ? 'text-gray-900' : 'text-white'
+              theme === 'light' ? 'text-blue-900' : 'text-white'
             }`}>PAN Card</h4>
             {formData.panCard && (
               <img
@@ -196,10 +196,10 @@ const Review = ({ formData }) => {
 
           {/* Passbook */}
           <div className={`p-4 rounded-lg border ${
-            theme === 'light' ? 'border-gray-200' : 'border-gray-700'
+            theme === 'light' ? 'border-blue-200' : 'border-gray-700'
           }`}>
             <h4 className={`text-sm font-medium mb-2 ${
-              theme === 'light' ? 'text-gray-900' : 'text-white'
+              theme === 'light' ? 'text-blue-900' : 'text-white'
             }`}>Bank Passbook</h4>
             {formData.passbook && (
               <img
@@ -216,8 +216,8 @@ const Review = ({ formData }) => {
       <div className="flex justify-end pt-6 border-t border-gray-200 dark:border-gray-700">
         <button
           onClick={downloadPDF}
-          className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 
-          transition-colors duration-200 flex items-center gap-2"
+          className={`px-6 py-2 ${theme === 'light' ? 'bg-blue-600 hover:bg-blue-700' : 'bg-purple-600 hover:bg-purple-700'} text-white rounded-lg 
+          transition-colors duration-200 flex items-center gap-2`}
         >
           <FiDownload className="w-4 h-4" />
           Download as PDF
@@ -227,4 +227,4 @@ const Review = ({ formData }) => {
   );
 };
 
-export default Review; 
+export default Review;

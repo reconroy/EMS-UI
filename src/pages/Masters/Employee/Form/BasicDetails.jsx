@@ -167,6 +167,7 @@ const BasicDetails = ({ formData, setFormData, onNext }) => {
         <InputField label="Location" name="location" required={isRequiredFields} />
         <InputField label="Department" name="department" required={isRequiredFields} />
         <InputField label="Designation" name="designation" required={isRequiredFields} />
+        <InputField label="Date of Joining" name="dateOfJoining" type="date" required={isRequiredFields} />
       </FormSection>
 
       {/* Identity Information */}
@@ -248,7 +249,11 @@ const BasicDetails = ({ formData, setFormData, onNext }) => {
           </table>
           <button
             type="button"
-            className="mt-2 text-purple-600 hover:text-purple-700 text-sm font-medium"
+            className={`mt-2 text-sm font-medium ${
+              theme === 'light' 
+                ? 'text-blue-600 hover:text-blue-700'
+                : 'text-purple-600 hover:text-purple-700'
+            }`}
             onClick={() => {/* We'll implement add row functionality later */}}
           >
             + Add Dependent
@@ -264,7 +269,7 @@ const BasicDetails = ({ formData, setFormData, onNext }) => {
             id="confirmDetails"
             checked={isConfirmed}
             onChange={(e) => setIsConfirmed(e.target.checked)}
-            className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
+            className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
           />
           <label 
             htmlFor="confirmDetails" 
@@ -281,7 +286,9 @@ const BasicDetails = ({ formData, setFormData, onNext }) => {
           whileTap={isConfirmed ? { scale: 0.98 } : {}}
           className={`w-full py-3 px-4 rounded-lg flex items-center justify-center gap-2 
             ${isConfirmed 
-              ? 'bg-purple-600 hover:bg-purple-700 text-white cursor-pointer' 
+              ? theme === 'light'
+                ? 'bg-blue-600 hover:bg-blue-700 text-white cursor-pointer'
+                : 'bg-purple-600 hover:bg-purple-700 text-white cursor-pointer'
               : 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
             } transition-colors duration-200`}
         >

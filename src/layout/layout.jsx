@@ -12,7 +12,7 @@ function Layout() {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   return (
-    <div className={`flex h-screen ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-700'}`}>
+    <div className={`flex h-screen ${theme === 'dark' ? 'bg-gray-900' : 'bg-slate-100'}`}>
       {/* Mobile Sidebar Overlay */}
       {isMobileMenuOpen && (
         <div 
@@ -39,13 +39,8 @@ function Layout() {
         <main className={`flex-1 overflow-auto p-4 md:p-6 ${
           theme === 'dark' 
             ? '' 
-            : 'bg-white/90'
-        }`}>
-         {/* <main className={`flex-1 overflow-auto p-4 md:p-6 ${
-          theme === 'dark' 
-            ? 'bg-gradient-to-br from-black via-purple-900 to-black' 
             : 'bg-white'
-        }`}> */}
+        }`}>
           <div className="container mx-auto">
             <Breadcrumb />
             <Outlet />

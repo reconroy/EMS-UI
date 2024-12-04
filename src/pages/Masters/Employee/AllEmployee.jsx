@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useThemeStore } from '../../../store/themeStore';
 import { useNavigate } from 'react-router-dom';
@@ -24,9 +24,11 @@ import {
   FiChevronsLeft,
   FiChevronsRight,
   FiChevronLeft,
-  FiChevronRight
+  FiChevronRight,
+  FiX
 } from 'react-icons/fi';
-import employeeData from '../../../data/dummyEmployees.json';
+import API, { endpoints } from '../../../services/api';
+import EmployeeDetailsModal from '../../../components/Modals/EmployeeDetailsModal';
 import * as XLSX from 'xlsx';
 
 const AllEmployee = () => {
@@ -40,33 +42,58 @@ const AllEmployee = () => {
   });
   const [columnFilters, setColumnFilters] = useState([]);
   const [showFilters, setShowFilters] = useState(false);
+  const [employees, setEmployees] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedEmployee, setSelectedEmployee] = useState(null);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
+
+  // Fetch employees
+  useEffect(() => {
+    fetchEmployees();
+  }, []);
+
+  const fetchEmployees = async () => {
+    try {
+      setLoading(true);
+      const response = await API.get(endpoints.employees.list);
+      setEmployees(response.data);
+    } catch (error) {
+      console.error('Error fetching employees:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleViewDetails = (employee) => {
+    setSelectedEmployee(employee);
+    setShowDetailsModal(true);
+  };
 
   // Get unique values for filter dropdowns
   const getUniqueValues = (data, key) => {
     return [...new Set(data.map(item => item[key]))].sort();
   };
 
-  // Replace the data constant with:
-  const data = useMemo(() => employeeData.employees, []);
+  const data = useMemo(() => employees, [employees]);
   
-  const departments = useMemo(() => getUniqueValues(data, 'department'), [data]);
-  const locations = useMemo(() => getUniqueValues(data, 'location'), [data]);
-  const designations = useMemo(() => getUniqueValues(data, 'designation'), [data]);
-  const statuses = useMemo(() => getUniqueValues(data, 'status'), [data]);
+  const departments = useMemo(() => getUniqueValues(data, 'departmentID'), [data]);
+  const roles = useMemo(() => getUniqueValues(data, 'roleID'), [data]);
+  const locations = useMemo(() => getUniqueValues(data, 'workingLocation'), [data]);
+  const statuses = useMemo(() => ['Active', 'Inactive'], []);
 
   const columns = useMemo(() => [
     {
-      accessorKey: 'id',
+      accessorKey: 'empID',
       header: 'Employee ID',
       enableSorting: true,
     },
     {
-      accessorKey: 'name',
+      accessorKey: 'fullName',
       header: 'Name',
       enableSorting: true,
     },
     {
-      accessorKey: 'department',
+      accessorKey: 'departmentID',
       header: 'Department',
       enableSorting: true,
     },
@@ -76,43 +103,46 @@ const AllEmployee = () => {
       enableSorting: true,
     },
     {
-      accessorKey: 'location',
+      accessorKey: 'workingLocation',
       header: 'Location',
       enableSorting: true,
     },
     {
-      accessorKey: 'status',
+      accessorKey: 'isActive',
       header: 'Status',
       enableSorting: true,
       cell: ({ row }) => (
         <span className={`px-3 py-1 rounded-full text-sm ${
-          row.original.status === 'Active'
+          row.original.isActive
             ? 'bg-green-100 text-green-800'
             : 'bg-red-100 text-red-800'
         }`}>
-          {row.original.status}
+          {row.original.isActive ? 'Active' : 'Inactive'}
         </span>
       ),
     },
     {
       id: 'actions',
-      header: 'Actions',
+      header: '',
       enableSorting: false,
-      cell: () => (
+      cell: ({ row }) => (
         <div className="flex justify-end gap-3">
-          <button className="text-purple-400 hover:text-purple-300 transition-colors">
+          <button className={`${theme === 'dark' ? 'text-purple-400 hover:text-purple-300' : 'text-blue-400 hover:text-blue-300'} transition-colors`}>
             <FiEdit2 className="w-5 h-5" />
           </button>
           <button className="text-red-400 hover:text-red-300 transition-colors">
             <FiTrash2 className="w-5 h-5" />
           </button>
-          <button className="text-purple-400 hover:text-purple-300 transition-colors">
+          <button 
+            onClick={() => handleViewDetails(row.original)}
+            className={`${theme === 'dark' ? 'text-purple-400 hover:text-purple-300' : 'text-blue-400 hover:text-blue-300'} transition-colors`}
+          >
             <FiMoreVertical className="w-5 h-5" />
           </button>
         </div>
       ),
     },
-  ], []);
+  ], [theme]);
 
   // Enhanced fuzzy search function
   const fuzzyFilter = (row, columnId, value, addMeta) => {
@@ -227,50 +257,69 @@ const AllEmployee = () => {
 
   const buttonClass = theme === 'dark'
     ? 'bg-purple-600 hover:bg-purple-700 text-white'
-    : 'bg-purple-600 hover:bg-purple-700 text-white';
+    : 'bg-blue-600 hover:bg-blue-700 text-white';
 
   const secondaryButtonClass = theme === 'dark'
     ? 'bg-purple-900/40 hover:bg-purple-900/60 text-purple-300'
-    : 'bg-purple-50 hover:bg-purple-100 text-purple-600';
+    : 'bg-blue-50 hover:bg-blue-100 text-blue-600';
 
-  const handleExport = () => {
-    // Get all filtered rows without pagination
-    const filteredRows = table.getFilteredRowModel().rows;
+  const handleExportToExcel = () => {
+    try {
+      console.log('Total employees:', employees.length); // Debug log
+      
+      // Use the entire employees array instead of filtered/paginated data
+      const exportData = employees.map(emp => {
+        console.log('Processing employee:', emp); // Debug log
+        return {
+          'Employee ID': emp.empID,
+          'Full Name': emp.fullName,
+          'Nick Name': emp.nickName,
+          'Father Name': emp.fatherName,
+          'Mother Name': emp.motherName,
+          'Marital Status': emp.maritalStatus,
+          'Qualification': emp.qualification,
+          'Email': emp.email,
+          'Primary Mobile': emp.mobile1,
+          'Secondary Mobile': emp.mobile2,
+          'Permanent Address': emp.pAddress,
+          'Permanent Pin Code': emp.pPinCode,
+          'Permanent District': emp.pDistrict,
+          'Current Address': emp.cAddress,
+          'Current Pin Code': emp.cPinCode,
+          'Current District': emp.cDistrict,
+          'Date of Birth': emp.dob ? new Date(emp.dob).toLocaleDateString() : '',
+          'Date of Joining': emp.doj ? new Date(emp.doj).toLocaleDateString() : '',
+          'Gender': emp.gender,
+          'Department ID': emp.departmentID,
+          'Role ID': emp.roleID,
+          'Designation': emp.designation,
+          'Aadhaar Number': emp.aadhaarNumber,
+          'PAN Number': emp.panNumber,
+          'Status': emp.isActive ? 'Active' : 'Inactive',
+          'Working Location': emp.workingLocation
+        };
+      });
 
-    // Prepare the data for export (excluding the actions column)
-    const exportData = filteredRows.map(row => ({
-      'Employee ID': row.original.id,
-      'Name': row.original.name,
-      'Department': row.original.department,
-      'Designation': row.original.designation,
-      'Location': row.original.location,
-      'Status': row.original.status
-    }));
+      console.log('Export data prepared:', exportData.length); // Debug log
 
-    // Create worksheet
-    const ws = XLSX.utils.json_to_sheet(exportData);
+      // Create workbook and worksheet
+      const wb = XLSX.utils.book_new();
+      const ws = XLSX.utils.json_to_sheet(exportData);
 
-    // Set column widths
-    const colWidths = [
-      { wch: 15 }, // Employee ID
-      { wch: 20 }, // Name
-      { wch: 15 }, // Department
-      { wch: 20 }, // Designation
-      { wch: 15 }, // Location
-      { wch: 10 }  // Status
-    ];
-    ws['!cols'] = colWidths;
+      // Add worksheet to workbook
+      XLSX.utils.book_append_sheet(wb, ws, 'Employees');
 
-    // Create workbook
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Employees');
+      // Generate file name with current date
+      const date = new Date().toISOString().split('T')[0];
+      const fileName = `Employees_${date}.xlsx`;
 
-    // Generate file name with current date
-    const date = new Date().toISOString().split('T')[0];
-    const fileName = `employees_${date}.xlsx`;
-
-    // Save file
-    XLSX.writeFile(wb, fileName);
+      // Save the file
+      XLSX.writeFile(wb, fileName);
+      
+      console.log('File exported successfully'); // Debug log
+    } catch (error) {
+      console.error('Error exporting to Excel:', error);
+    }
   };
 
   return (
@@ -281,7 +330,7 @@ const AllEmployee = () => {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <h1 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
+          <h1 className={`text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r ${theme === 'dark' ? 'from-purple-400 to-pink-400' : 'from-blue-400 to-blue-600'}`}>
             Employee Management
           </h1>
           <p className={`${subTextClass} mt-1`}>Manage and view all employee records</p>
@@ -291,7 +340,7 @@ const AllEmployee = () => {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           onClick={() => navigate('/masters/employee/add')}
-          className={`px-4 py-2.5 rounded-lg flex items-center gap-2 ${buttonClass}`}
+          className={`px-4 py-2.5 rounded-lg flex items-center gap-2 ${theme === 'dark' ? buttonClass : 'bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-200'}`}
         >
           <FiPlus className="w-5 h-5" />
           <span>Add Employee</span>
@@ -307,18 +356,28 @@ const AllEmployee = () => {
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="flex-1">
             <div className="relative">
-              <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400" />
+              <FiSearch className={`absolute left-3 top-1/2 transform -translate-y-1/2 ${theme === 'dark' ? 'text-purple-400' : 'text-blue-400'}`} />
               <input
                 type="text"
                 placeholder="Search employees..."
                 value={globalFilter ?? ''}
                 onChange={e => setGlobalFilter(e.target.value)}
-                className={`w-full pl-10 pr-4 py-2 rounded-lg border ${
+                className={`w-full pl-10 pr-10 py-2 rounded-lg border ${
                   theme === 'dark'
                     ? 'bg-purple-900/20 border-purple-500/20 text-purple-100 placeholder-purple-400'
                     : 'bg-white border-gray-200 text-gray-900 placeholder-gray-400'
                 }`}
               />
+              {globalFilter && (
+                <button
+                  onClick={() => setGlobalFilter('')}
+                  className={`absolute right-3 top-1/2 transform -translate-y-1/2 ${
+                    theme === 'dark' ? 'text-purple-400 hover:text-purple-300' : 'text-blue-400 hover:text-blue-500'
+                  } transition-colors`}
+                >
+                  <FiX className="w-4 h-4" />
+                </button>
+              )}
             </div>
           </div>
           <div className="flex gap-2">
@@ -330,7 +389,7 @@ const AllEmployee = () => {
               <span className="hidden sm:inline">Filters</span>
             </button>
             <button 
-              onClick={handleExport}
+              onClick={handleExportToExcel}
               className={`px-4 py-2 rounded-lg flex items-center gap-2 ${secondaryButtonClass}`}
             >
               <FiDownload className="w-5 h-5" />
@@ -424,12 +483,12 @@ const AllEmployee = () => {
                     ${index % 2 === 0 
                       ? theme === 'dark' 
                         ? 'bg-purple-900/10' 
-                        : 'bg-gray-100'
+                        : 'bg-blue-50'
                       : theme === 'dark'
                         ? 'bg-transparent'
                         : 'bg-white'
                     }
-                    hover:${theme === 'dark' ? 'bg-purple-900/20' : 'bg-purple-50'} 
+                    hover:${theme === 'dark' ? 'bg-purple-900/20' : 'bg-blue-100'} 
                     transition-colors
                     ${theme === 'dark' ? 'border-purple-500/20' : 'border-gray-200'}
                   `}
@@ -524,8 +583,19 @@ const AllEmployee = () => {
           </div>
         </div>
       </motion.div>
+
+      {/* Add the modal */}
+      {showDetailsModal && selectedEmployee && (
+        <EmployeeDetailsModal
+          employee={selectedEmployee}
+          onClose={() => {
+            setShowDetailsModal(false);
+            setSelectedEmployee(null);
+          }}
+        />
+      )}
     </div>
   );
 };
 
-export default AllEmployee; 
+export default AllEmployee;
