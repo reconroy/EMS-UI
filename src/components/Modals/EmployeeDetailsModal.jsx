@@ -7,22 +7,22 @@ const EmployeeDetailsModal = ({ employee, onClose }) => {
   const theme = useThemeStore((state) => state.theme);
 
   return (
-    <AnimatePresence>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-      >
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 overflow-y-auto"
+    >
+      <div className="min-h-screen flex items-center justify-center">
         <motion.div
           initial={{ scale: 0.95 }}
           animate={{ scale: 1 }}
           exit={{ scale: 0.95 }}
-          className={`w-full max-w-2xl rounded-xl ${
+          className={`w-full max-w-4xl mx-auto my-4 rounded-xl ${
             theme === 'dark' 
               ? 'bg-black/90 border border-purple-500/20' 
               : 'bg-white'
-          } overflow-hidden shadow-xl`}
+          } overflow-hidden shadow-xl relative`}
         >
           {/* Header */}
           <div className={`relative p-6 border-b ${
@@ -51,32 +51,75 @@ const EmployeeDetailsModal = ({ employee, onClose }) => {
             <div className="flex justify-center">
               <img
                 src={employee.profilePicture || defaultAvatar}
-                alt={`${employee.firstName} ${employee.lastName}`}
-                className={`w-32 h-32 rounded-full object-cover border-4 ${
+                alt={employee.fullName}
+                className={`w-24 h-24 sm:w-32 sm:h-32 rounded-full object-cover border-4 ${
                   theme === 'dark' ? 'border-gray-700' : 'border-gray-200'
                 }`}
               />
             </div>
 
-            {/* Employee Information */}
-            <div className="grid grid-cols-2 gap-4">
-              <InfoItem label="First Name" value={employee.firstName} />
-              <InfoItem label="Last Name" value={employee.lastName} />
+            {/* Basic Information */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              <InfoItem label="Full Name" value={employee.fullName} />
+              <InfoItem label="Nick Name" value={employee.nickName} />
+              <InfoItem label="Father's Name" value={employee.fatherName} />
+              <InfoItem label="Mother's Name" value={employee.motherName} />
+              <InfoItem label="Marital Status" value={employee.maritalStatus} />
+              <InfoItem label="Qualification" value={employee.qualification} />
+            </div>
+
+            {/* Contact Information */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               <InfoItem label="Email" value={employee.email} />
-              <InfoItem label="Phone" value={employee.phone} />
-              <InfoItem label="Date of Birth" value={new Date(employee.dob).toLocaleDateString()} />
-              <InfoItem label="Date of Joining" value={new Date(employee.doj).toLocaleDateString()} />
-              <InfoItem label="Gender" value={employee.gender} />
+              <InfoItem label="Primary Mobile" value={employee.mobile1} />
+              <InfoItem label="Secondary Mobile" value={employee.mobile2} />
+            </div>
+
+            {/* Permanent Address */}
+            <div className="space-y-2">
+              <h3 className={`font-medium ${theme === 'dark' ? 'text-purple-300' : 'text-blue-600'}`}>
+                Permanent Address
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <InfoItem label="Address" value={employee.pAddress} className="col-span-full" />
+                <InfoItem label="Pin Code" value={employee.pPinCode} />
+                <InfoItem label="District" value={employee.pDistrict} />
+              </div>
+            </div>
+
+            {/* Current Address */}
+            <div className="space-y-2">
+              <h3 className={`font-medium ${theme === 'dark' ? 'text-purple-300' : 'text-blue-600'}`}>
+                Current Address
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <InfoItem label="Address" value={employee.cAddress} className="col-span-full" />
+                <InfoItem label="Pin Code" value={employee.cPinCode} />
+                <InfoItem label="District" value={employee.cDistrict} />
+              </div>
+            </div>
+
+            {/* Professional Information */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               <InfoItem label="Department" value={employee.departmentID} />
               <InfoItem label="Role" value={employee.roleID} />
-              <InfoItem label="Location" value={employee.workingLocation} />
+              <InfoItem label="Designation" value={employee.designation} />
+              <InfoItem label="Working Location" value={employee.workingLocation} />
+              <InfoItem label="Date of Birth" value={new Date(employee.dob).toLocaleDateString()} />
+              <InfoItem label="Date of Joining" value={new Date(employee.doj).toLocaleDateString()} />
+            </div>
+
+            {/* Identity Information */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              <InfoItem label="Aadhaar Number" value={employee.aadhaarNumber} />
+              <InfoItem label="PAN Number" value={employee.panNumber} />
+              <InfoItem label="Gender" value={employee.gender} />
               <InfoItem label="Status" value={employee.isActive ? 'Active' : 'Inactive'} />
-              <InfoItem label="Address" value={employee.address} className="col-span-2" />
             </div>
           </div>
         </motion.div>
-      </motion.div>
-    </AnimatePresence>
+      </div>
+    </motion.div>
   );
 };
 

@@ -88,7 +88,7 @@ const AllEmployee = () => {
       enableSorting: true,
     },
     {
-      accessorFn: (row) => `${row.firstName} ${row.lastName}`,
+      accessorKey: 'fullName',
       header: 'Name',
       enableSorting: true,
     },
@@ -98,7 +98,7 @@ const AllEmployee = () => {
       enableSorting: true,
     },
     {
-      accessorKey: 'roleID',
+      accessorKey: 'designation',
       header: 'Designation',
       enableSorting: true,
     },
@@ -123,7 +123,7 @@ const AllEmployee = () => {
     },
     {
       id: 'actions',
-      header: 'Actions',
+      header: '',
       enableSorting: false,
       cell: ({ row }) => (
         <div className="flex justify-end gap-3">
@@ -263,41 +263,54 @@ const AllEmployee = () => {
     ? 'bg-purple-900/40 hover:bg-purple-900/60 text-purple-300'
     : 'bg-blue-50 hover:bg-blue-100 text-blue-600';
 
-  const handleExport = () => {
-    // Prepare the data for export (excluding the actions column)
-    const exportData = data.map(item => ({
-      'Employee ID': item.id,
-      'Name': item.name,
-      'Department': item.department,
-      'Designation': item.designation,
-      'Location': item.location,
-      'Status': item.status
-    }));
+  const handleExportToExcel = () => {
+    try {
+      // Transform the data to include all fields
+      const exportData = employees.map(emp => ({
+        'Employee ID': emp.empID,
+        'Full Name': emp.fullName,
+        'Nick Name': emp.nickName,
+        'Father Name': emp.fatherName,
+        'Mother Name': emp.motherName,
+        'Marital Status': emp.maritalStatus,
+        'Qualification': emp.qualification,
+        'Email': emp.email,
+        'Primary Mobile': emp.mobile1,
+        'Secondary Mobile': emp.mobile2,
+        'Permanent Address': emp.pAddress,
+        'Permanent Pin Code': emp.pPinCode,
+        'Permanent District': emp.pDistrict,
+        'Current Address': emp.cAddress,
+        'Current Pin Code': emp.cPinCode,
+        'Current District': emp.cDistrict,
+        'Date of Birth': new Date(emp.dob).toLocaleDateString(),
+        'Date of Joining': new Date(emp.doj).toLocaleDateString(),
+        'Gender': emp.gender,
+        'Department ID': emp.departmentID,
+        'Role ID': emp.roleID,
+        'Designation': emp.designation,
+        'Aadhaar Number': emp.aadhaarNumber,
+        'PAN Number': emp.panNumber,
+        'Status': emp.isActive ? 'Active' : 'Inactive',
+        'Working Location': emp.workingLocation
+      }));
 
-    // Create worksheet
-    const ws = XLSX.utils.json_to_sheet(exportData);
+      // Create workbook and worksheet
+      const wb = XLSX.utils.book_new();
+      const ws = XLSX.utils.json_to_sheet(exportData);
 
-    // Set column widths
-    const colWidths = [
-      { wch: 15 }, // Employee ID
-      { wch: 20 }, // Name
-      { wch: 15 }, // Department
-      { wch: 20 }, // Designation
-      { wch: 15 }, // Location
-      { wch: 10 }  // Status
-    ];
-    ws['!cols'] = colWidths;
+      // Add worksheet to workbook
+      XLSX.utils.book_append_sheet(wb, ws, 'Employees');
 
-    // Create workbook
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Employees');
+      // Generate file name with current date
+      const fileName = `Employees_${new Date().toISOString().split('T')[0]}.xlsx`;
 
-    // Generate file name with current date
-    const date = new Date().toISOString().split('T')[0];
-    const fileName = `employees_${date}.xlsx`;
-
-    // Save file
-    XLSX.writeFile(wb, fileName);
+      // Save the file
+      XLSX.writeFile(wb, fileName);
+    } catch (error) {
+      console.error('Error exporting to Excel:', error);
+      // Add error handling (toast notification, etc.)
+    }
   };
 
   return (
@@ -367,7 +380,7 @@ const AllEmployee = () => {
               <span className="hidden sm:inline">Filters</span>
             </button>
             <button 
-              onClick={handleExport}
+              onClick={handleExportToExcel}
               className={`px-4 py-2 rounded-lg flex items-center gap-2 ${secondaryButtonClass}`}
             >
               <FiDownload className="w-5 h-5" />
