@@ -14,7 +14,7 @@ const Navbar = ({ onMenuClick }) => {
   };
 
   return (
-    <nav className={`bg-black/40 border-b border-purple-500/20 p-4 ${theme === 'dark' ? 'bg-black/40 backdrop-blur-xl border-r border-purple-500/20' : 'bg-slate-100 border-r border-slate-200'}`}>
+    <nav className={`bg-black/40 border-b border-purple-500/20 p-4 ${theme === 'dark' ? 'bg-black/40 backdrop-blur-xl border-r border-purple-500/20' : 'bg-black/40 backdrop-blur-xl border-r border-slate-200'}`}>
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-4">
           <motion.button
@@ -25,7 +25,7 @@ const Navbar = ({ onMenuClick }) => {
           >
             <FiMenu className="w-6 h-6" />
           </motion.button>
-          <Link to="/dashboard" className={`text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r ${theme === 'dark' ? 'from-purple-400 to-pink-400' : 'from-blue-400 to-blue-600'}`}>
+          <Link to="/dashboard" className={`text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r ${theme === 'dark' ? 'from-purple-400 to-pink-400' : 'text-white'}`}>
             CUPL | EMS
           </Link>
         </div>

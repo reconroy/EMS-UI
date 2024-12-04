@@ -12,7 +12,7 @@ function Layout() {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   return (
-    <div className={`flex h-screen ${theme === 'dark' ? 'bg-gray-900' : 'bg-slate-100'}`}>
+    <div className={`flex h-screen ${theme === 'dark' ? 'bg-gray-900' : 'bg-blue-900'}`}>
       {/* Mobile Sidebar Overlay */}
       {isMobileMenuOpen && (
         <div 

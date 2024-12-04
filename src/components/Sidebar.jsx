@@ -52,7 +52,7 @@ const Sidebar = ({ onClose, isMobile, isCollapsed, onCollapse }) => {
         <div className="space-y-2">
           <button
             onClick={() => toggleExpand(item.path)}
-            className={`w-full flex items-center ${!isMobile && isCollapsed ? 'justify-center' : 'justify-between'} p-3 rounded-lg transition-colors duration-200 ${theme === 'dark' ? 'text-purple-300 hover:bg-purple-900/50' : 'text-blue-700 hover:bg-blue-100'}`}
+            className={`w-full flex items-center ${!isMobile && isCollapsed ? 'justify-center' : 'justify-between'} p-3 rounded-lg transition-colors duration-200 ${theme === 'dark' ? 'text-purple-300 hover:bg-purple-900/50' : 'text-white hover:bg-blue-500'}`}
           >
             <div className="flex items-center space-x-3">
               {item.icon}
@@ -97,7 +97,7 @@ const Sidebar = ({ onClose, isMobile, isCollapsed, onCollapse }) => {
                             : "bg-blue-600 text-white"
                           : theme === 'dark' 
                             ? "text-purple-300 hover:bg-purple-900/50" 
-                            : "text-blue-700 hover:bg-blue-100"
+                            : "text-white hover:bg-blue-500"
                       }`}
                     >
                       {subItem.icon}
@@ -124,7 +124,7 @@ const Sidebar = ({ onClose, isMobile, isCollapsed, onCollapse }) => {
                   : "bg-blue-600 text-white"
                 : theme === 'dark' 
                   ? "text-purple-300 hover:bg-purple-900/50" 
-                  : "text-blue-700 hover:bg-blue-100"
+                  : "text-white hover:bg-blue-500"
             }`}
           >
             {item.icon}
@@ -151,7 +151,7 @@ const Sidebar = ({ onClose, isMobile, isCollapsed, onCollapse }) => {
       initial={false}
       animate={{ width: !isMobile && isCollapsed ? "4.5rem" : "16rem" }}
       transition={{ duration: 0.2 }}
-      className={`h-screen ${theme === 'dark' ? 'bg-black/40 backdrop-blur-xl border-r border-purple-500/20' : 'bg-slate-100 border-r border-slate-200'}`}
+      className={`h-screen ${theme === 'dark' ? 'bg-black/40 backdrop-blur-xl border-r border-purple-500/20' : 'bg-black/40 backdrop-blur-xl border-r border-slate-200'}`}
     >
       <div className="p-4">
         <div className="flex items-center justify-between mb-8">
@@ -189,9 +189,9 @@ const Sidebar = ({ onClose, isMobile, isCollapsed, onCollapse }) => {
               }`}
             >
               {isCollapsed ? (
-                <FiChevronRight className={`w-6 h-6 ${theme === 'dark' ? 'text-purple-300 hover:text-purple-100' : 'text-blue-500 hover:text-blue-700'}`} />
+                <FiChevronRight className={`w-6 h-6 ${theme === 'dark' ? 'text-purple-300 hover:text-purple-100' : 'text-white hover:text-blue-700 hover:bg-white hover:rounded-full'}`} />
               ) : (
-                <FiChevronLeft className={`w-6 h-6 ${theme === 'dark' ? 'text-purple-300 hover:text-purple-100' : 'text-blue-500 hover:text-blue-700'}`} />
+                <FiChevronLeft className={`w-6 h-6 ${theme === 'dark' ? 'text-purple-300 hover:text-purple-100' : 'text-white hover:text-blue-700 hover:bg-white hover:rounded-full'}`} />
               )}
             </motion.button>
           )}
