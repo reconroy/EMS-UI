@@ -91,17 +91,17 @@ const Department = () => {
     if (!editingDept) {
       try {
         setLoading(true);
-        showNotification('processing', 'Creating new department...');
+        showNotification('processing', `Creating new department ${deptName}...`);
         await API.post('/Departments', {
           deptID: 0,
           deptName: deptName
         });
         await fetchDepartments();
         setDeptName('');
-        showNotification('success', 'Department created successfully!');
+        showNotification('success', `Department ${deptName} created successfully!`);
       } catch (error) {
         console.error('Error creating department:', error);
-        showNotification('error', 'Failed to create department. Please try again.');
+        showNotification('error', `Failed to create  ${deptName}  department. Please try again.`);
       } finally {
         setLoading(false);
       }
@@ -116,7 +116,7 @@ const Department = () => {
 
       try {
         setLoading(true);
-        showNotification('processing', 'Updating department...');
+        showNotification('processing', `Updating department ${deptName}...`);
         await API.put(`/Departments/${editingDept.deptID}`, {
           deptID: editingDept.deptID,
           deptName: deptName
@@ -125,10 +125,10 @@ const Department = () => {
         setDeptName('');
         setEditingDept(null);
         setOriginalDeptName('');
-        showNotification('success', 'Department updated successfully!');
+        showNotification('success', `Department ${deptName} updated successfully!`);
       } catch (error) {
         console.error('Error updating department:', error);
-        showNotification('error', 'Failed to update department. Please try again.');
+        showNotification('error', `Failed to update ${deptName} department. Please try again.`);
       } finally {
         setLoading(false);
       }

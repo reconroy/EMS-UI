@@ -11,6 +11,7 @@ import {
   getSortedRowModel,
   flexRender,
 } from '@tanstack/react-table';
+import Notification from '../../../components/Notification';
 
 const ClearableInput = ({ value, onChange, placeholder, className, required = false }) => {
   const theme = useThemeStore((state) => state.theme);
@@ -39,6 +40,7 @@ const Roles = () => {
   const [editingRole, setEditingRole] = useState(null);
   const [loading, setLoading] = useState(false);
   const [originalRoleName, setOriginalRoleName] = useState('');
+  const [notification, setNotification] = useState({ show: false, type: 'success', message: '' });
 
   // Fetch roles
   useEffect(() => {
@@ -67,12 +69,14 @@ const Roles = () => {
           roleId: editingRole.roleId,
           roleName: roleName
         });
+        setNotification({ show: true, type: 'success', message: `Role "${roleName}" updated successfully!` });
       } else {
         // Create new role
         await API.post('/Roles', {
           roleId: 0,
           roleName: roleName
         });
+        setNotification({ show: true, type: 'success', message: `Role "${roleName}" created successfully!` });
       }
       // Refresh roles list
       await fetchRoles();
@@ -81,6 +85,7 @@ const Roles = () => {
       setEditingRole(null);
     } catch (error) {
       console.error('Error saving role:', error);
+      setNotification({ show: true, type: 'error', message: `Error saving role "${roleName}"!` });
     } finally {
       setLoading(false);
     }
@@ -90,20 +95,6 @@ const Roles = () => {
     setEditingRole(role);
     setRoleName(role.roleName);
     setOriginalRoleName(role.roleName);
-  };
-
-  const handleDelete = async (roleId) => {
-    if (window.confirm('Are you sure you want to delete this role?')) {
-      try {
-        setLoading(true);
-        await API.delete(`/Roles/${roleId}`);
-        await fetchRoles();
-      } catch (error) {
-        console.error('Error deleting role:', error);
-      } finally {
-        setLoading(false);
-      }
-    }
   };
 
   const columns = useMemo(() => [
@@ -219,6 +210,13 @@ const Roles = () => {
 
   return (
     <div className="space-y-6">
+      {/* Notification Component */}
+      <Notification 
+        show={notification.show} 
+        type={notification.type} 
+        message={notification.message} 
+        onClose={() => setNotification({ ...notification, show: false })} 
+      />
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
