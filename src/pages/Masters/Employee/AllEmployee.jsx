@@ -83,6 +83,16 @@ const AllEmployee = () => {
 
   const columns = useMemo(() => [
     {
+      id: 'serialNumber',
+      header: 'S.No',
+      enableSorting: false,
+      cell: ({ row }) => {
+        const pageSize = table.getState().pagination.pageSize;
+        const pageIndex = table.getState().pagination.pageIndex;
+        return pageIndex * pageSize + row.index + 1;
+      },
+    },
+    {
       accessorKey: 'empID',
       header: 'Employee ID',
       enableSorting: true,
@@ -263,6 +273,43 @@ const AllEmployee = () => {
     ? 'bg-purple-900/40 hover:bg-purple-900/60 text-purple-300'
     : 'bg-blue-50 hover:bg-blue-100 text-blue-600';
 
+  const handleExport = () => {
+    // Prepare the data for export (excluding the actions column)
+    const exportData = data.map(item => ({
+      'Employee ID': item.id,
+      'Name': item.name,
+      'Department': item.department,
+      'Designation': item.designation,
+      'Location': item.location,
+      'Status': item.status
+    }));
+
+    // Create worksheet
+    const ws = XLSX.utils.json_to_sheet(exportData);
+
+    // Set column widths
+    const colWidths = [
+      { wch: 15 }, // Employee ID
+      { wch: 20 }, // Name
+      { wch: 15 }, // Department
+      { wch: 20 }, // Designation
+      { wch: 15 }, // Location
+      { wch: 10 }  // Status
+    ];
+    ws['!cols'] = colWidths;
+
+    // Create workbook
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Employees');
+
+    // Generate file name with current date
+    const date = new Date().toISOString().split('T')[0];
+    const fileName = `employees_${date}.xlsx`;
+
+    // Save file
+    XLSX.writeFile(wb, fileName);
+  };
+
   const handleExportToExcel = () => {
     try {
       // Transform the data to include all fields
@@ -380,7 +427,7 @@ const AllEmployee = () => {
               <span className="hidden sm:inline">Filters</span>
             </button>
             <button 
-              onClick={handleExportToExcel}
+              onClick={handleExport}
               className={`px-4 py-2 rounded-lg flex items-center gap-2 ${secondaryButtonClass}`}
             >
               <FiDownload className="w-5 h-5" />
