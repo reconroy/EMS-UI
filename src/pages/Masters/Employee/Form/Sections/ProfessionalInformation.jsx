@@ -63,21 +63,29 @@ const ProfessionalInformation = ({ theme, formData, handleChange }) => {
   const fields = [
     {
       label: 'Working Location',
-      name: 'workingLocation',
+      name: 'workingLocation', 
       type: 'select',
       options: locations?.map(loc => ({
         value: loc.locationId?.toString(),
-        label: loc.locationName
+        label: loc.locationName,
+        data: {
+          id: loc.locationId,
+          name: loc.locationName
+        }
       })) || [],
       required: true
     },
     {
       label: 'Department',
       name: 'department',
-      type: 'select',
+      type: 'select', 
       options: departments?.map(dept => ({
         value: dept.deptId?.toString(),
-        label: dept.deptName
+        label: dept.deptName,
+        data: {
+          id: dept.deptId,
+          name: dept.deptName
+        }
       })) || [],
       required: true
     },
@@ -87,7 +95,11 @@ const ProfessionalInformation = ({ theme, formData, handleChange }) => {
       type: 'select',
       options: designations?.map(desig => ({
         value: desig.designationId?.toString(),
-        label: desig.designationName
+        label: desig.designationName,
+        data: {
+          id: desig.designationId,
+          name: desig.designationName
+        }
       })) || [],
       required: true
     },
@@ -97,7 +109,11 @@ const ProfessionalInformation = ({ theme, formData, handleChange }) => {
       type: 'select',
       options: roles?.map(role => ({
         value: role.roleId?.toString(),
-        label: role.roleName
+        label: role.roleName,
+        data: {
+          id: role.roleId,
+          name: role.roleName
+        }
       })) || [],
       required: true
     },

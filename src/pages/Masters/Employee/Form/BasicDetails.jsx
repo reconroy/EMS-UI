@@ -54,20 +54,28 @@ const BasicDetails = ({ formData, setFormData, onNext }) => {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-
-    if (type === 'checkbox') {
-      setFormData(prev => ({ ...prev, [name]: checked }));
-      return;
+    
+    if (type === 'select-one') {
+      const field = ['workingLocation', 'department', 'designation', 'role'].includes(name);
+      if (field) {
+        const select = e.target;
+        const selectedOption = select.options[select.selectedIndex];
+        const data = JSON.parse(selectedOption.dataset.data || '{}');
+        
+        setFormData(prev => ({
+          ...prev,
+          [`${name}Id`]: data.id,
+          [`${name}Name`]: data.name,
+          [name]: value
+        }));
+        return;
+      }
     }
 
-    // Handle date formatting
-    if (name === 'dob' || name === 'doj') {
-      const formattedDate = value.replace(/(\d{2})\/(\d{2})\/(\d{4})/, '$1/$2/$3');
-      setFormData(prev => ({ ...prev, [name]: formattedDate }));
-      return;
-    }
-
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }));
   };
 
   const handleSubmit = (e) => {
