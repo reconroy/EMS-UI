@@ -3,6 +3,8 @@ import { motion } from 'framer-motion';
 import { useThemeStore } from '../../../store/themeStore';
 import { useNavigate } from 'react-router-dom';
 import { FiArrowLeft, FiSave, FiArrowRight } from 'react-icons/fi';
+import Notification from '../../../components/Notification';
+import API from '../../../services/api';
 
 import StepIndicator from './Form/StepIndicator';
 import BasicDetails from './Form/BasicDetails';
@@ -21,6 +23,11 @@ const AddEmployee = () => {
     return savedData ? JSON.parse(savedData) : {};
   });
   const [isConfirmed, setIsConfirmed] = useState(false);
+  const [notification, setNotification] = useState({
+    show: false,
+    type: 'success',
+    message: '',
+  });
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(formData));
@@ -39,10 +46,88 @@ const AddEmployee = () => {
     navigate('/masters/employee/view');
   };
 
-  const handleSubmit = () => {
-    if (isConfirmed) {
-      // Submit logic here
-      console.log('Form submitted:', formData);
+  const showNotification = (type, message) => {
+    setNotification({
+      show: true,
+      type,
+      message,
+    });
+  };
+
+  const handleSubmit = async () => {
+    if (!isConfirmed) {
+      showNotification('warning', 'Please confirm the details before submitting');
+      return;
+    }
+
+    if (currentStep !== 4) {
+      showNotification('warning', 'Please complete all steps before submitting');
+      return;
+    }
+
+    try {
+      showNotification('processing', 'Registering employee...');
+      
+      const formatDate = (dateStr) => {
+        if (!dateStr) return null;
+        const [day, month, year] = dateStr.split('/');
+        return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+      };
+
+      const employeeData = {
+        empID: 0,
+        fullName: formData.fullName || 'string',
+        nickName: formData.nickName || 'string',
+        fatherName: formData.fatherName || 'string',
+        motherName: formData.motherName || 'string',
+        maritalStatus: formData.maritalStatus || 'string',
+        qualification: formData.qualification || 'string',
+        email: formData.email || 'string',
+        mobile1: formData.mobile1 || 'string',
+        mobile2: formData.mobile2 || 'string',
+        pAddress: formData.pAddress || 'string',
+        pPinCode: formData.pPinCode || 'string',
+        pDistrict: formData.pDistrict || 'string',
+        cAddress: formData.cAddress || 'string',
+        cPinCode: formData.cPinCode || 'string',
+        cDistrict: formData.cDistrict || 'string',
+        dob: formatDate(formData.dob) || '2024-12-05',
+        doj: formatDate(formData.doj) || '2024-12-05',
+        gender: formData.gender || 'string',
+        departmentID: Number(formData.departmentId) || 0,
+        roleID: Number(formData.roleId) || 0,
+        designation: formData.designation || 'string',
+        aadhaarNumber: formData.aadhaarNumber || 'string',
+        panNumber: formData.panNumber || 'string',
+        isActive: formData.isActive === undefined ? true : formData.isActive,
+        workingLocation: formData.workingLocation || 'string'
+      };
+
+      console.log('Employee Data:', employeeData);
+
+      const response = await API.post('/Employees', employeeData);
+      
+      if (response.status === 201 || response.status === 200) {
+        showNotification('success', 'Employee registered successfully!');
+        
+        // Clear all localStorage
+        localStorage.removeItem(STORAGE_KEY);
+        localStorage.removeItem('empIdentityDetails');
+        localStorage.removeItem('empBankDetails');
+        
+        // Navigate to employee list
+        navigate('/masters/employee/view');
+      }
+    } catch (error) {
+      console.error('Error registering employee:', error);
+      if (error.response?.data?.errors) {
+        const errorMessages = Object.values(error.response.data.errors)
+          .flat()
+          .join(', ');
+        showNotification('error', errorMessages);
+      } else {
+        showNotification('error', 'Failed to register employee. Please try again.');
+      }
     }
   };
 
@@ -67,6 +152,12 @@ const AddEmployee = () => {
 
   return (
     <div className="space-y-6">
+      <Notification
+        show={notification.show}
+        type={notification.type}
+        message={notification.message}
+        onClose={() => setNotification({ ...notification, show: false })}
+      />
       {/* Header with Navigation */}
       <div className="flex items-center justify-between">
         <motion.div

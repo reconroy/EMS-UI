@@ -8,6 +8,7 @@ import AddressInformation from './Sections/AddressInformation';
 import ProfessionalInformation from './Sections/ProfessionalInformation';
 import Status from './Sections/Status';
 import API from '../../../../services/api';
+import IdentityInformation from './Sections/IdentityInformation';
 
 const BasicDetails = ({ formData, setFormData, onNext }) => {
   const theme = useThemeStore((state) => state.theme);
@@ -117,6 +118,7 @@ const BasicDetails = ({ formData, setFormData, onNext }) => {
       <PersonalInformation theme={theme} formData={formData} handleChange={handleChange} />
       <ContactInformation theme={theme} formData={formData} handleChange={handleChange} />
       <AddressInformation theme={theme} formData={formData} handleChange={handleChange} />
+      <IdentityInformation formData={formData} setFormData={setFormData} />
       <ProfessionalInformation
         theme={theme}
         formData={formData}
