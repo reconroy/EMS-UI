@@ -18,6 +18,7 @@ import {
   getSortedRowModel,
   flexRender,
 } from '@tanstack/react-table';
+import Notification from '../../../components/Notification';
 
 const ClearableInput = ({ value, onChange, placeholder, className, required = false }) => {
   const theme = useThemeStore((state) => state.theme);
@@ -46,6 +47,22 @@ const Designation = () => {
   const [editingDesignation, setEditingDesignation] = useState(null);
   const [loading, setLoading] = useState(false);
   const [originalDesignationName, setOriginalDesignationName] = useState('');
+  const [notification, setNotification] = useState({
+    show: false,
+    type: 'success',
+    message: ''
+  });
+
+  const showNotification = (type, message) => {
+    const validTypes = ['success', 'error', 'warning', 'processing'];
+    const notificationType = validTypes.includes(type) ? type : 'error';
+    
+    setNotification({
+      show: true,
+      type: notificationType,
+      message
+    });
+  };
 
   // Fetch designations
   useEffect(() => {
@@ -55,9 +72,12 @@ const Designation = () => {
   const fetchDesignations = async () => {
     try {
       setLoading(true);
+      showNotification('processing', 'Fetching designations...');
       const response = await API.get('/Designations');
       setDesignations(response.data);
+      setNotification({ show: false, type: 'success', message: '' });
     } catch (error) {
+      showNotification('error', 'Failed to fetch designations');
       console.error('Error fetching designations:', error);
     } finally {
       setLoading(false);
@@ -75,7 +95,9 @@ const Designation = () => {
         });
         await fetchDesignations();
         setDesignationName('');
+        showNotification('success', 'Designation created successfully');
       } catch (error) {
+        showNotification('error', 'Failed to create designation');
         console.error('Error creating designation:', error);
       } finally {
         setLoading(false);
@@ -91,7 +113,9 @@ const Designation = () => {
         setDesignationName('');
         setEditingDesignation(null);
         setOriginalDesignationName('');
+        showNotification('success', 'Designation updated successfully');
       } catch (error) {
+        showNotification('error', 'Failed to update designation');
         console.error('Error updating designation:', error);
       } finally {
         setLoading(false);
@@ -218,6 +242,12 @@ const Designation = () => {
 
   return (
     <div className="space-y-6">
+      <Notification
+        show={notification.show}
+        type={notification.type}
+        message={notification.message}
+        onClose={() => setNotification({ ...notification, show: false })}
+      />
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}

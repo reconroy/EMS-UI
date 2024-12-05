@@ -18,6 +18,7 @@ import {
   getSortedRowModel,
   flexRender,
 } from '@tanstack/react-table';
+import Notification from '../../../components/Notification';
 
 const ClearableInput = ({ value, onChange, placeholder, className, required = false }) => {
   const theme = useThemeStore((state) => state.theme);
@@ -46,6 +47,11 @@ const Location = () => {
   const [editingLocation, setEditingLocation] = useState(null);
   const [loading, setLoading] = useState(false);
   const [originalLocationName, setOriginalLocationName] = useState('');
+  const [notification, setNotification] = useState({
+    show: false,
+    type: 'success',
+    message: ''
+  });
 
   // Fetch locations
   useEffect(() => {
@@ -55,13 +61,27 @@ const Location = () => {
   const fetchLocations = async () => {
     try {
       setLoading(true);
+      showNotification('processing', 'Fetching locations...');
       const response = await API.get('/Locations');
       setLocations(response.data);
+      setNotification({ show: false, type: 'success', message: '' });
     } catch (error) {
+      showNotification('error', 'Failed to fetch locations');
       console.error('Error fetching locations:', error);
     } finally {
       setLoading(false);
     }
+  };
+
+  const showNotification = (type, message) => {
+    const validTypes = ['success', 'error', 'warning', 'processing'];
+    const notificationType = validTypes.includes(type) ? type : 'error';
+    
+    setNotification({
+      show: true,
+      type: notificationType,
+      message
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -75,7 +95,9 @@ const Location = () => {
         });
         await fetchLocations();
         setLocationName('');
+        showNotification('success', 'Location created successfully');
       } catch (error) {
+        showNotification('error', 'Failed to create location');
         console.error('Error creating location:', error);
       } finally {
         setLoading(false);
@@ -91,7 +113,9 @@ const Location = () => {
         setLocationName('');
         setEditingLocation(null);
         setOriginalLocationName('');
+        showNotification('success', 'Location updated successfully');
       } catch (error) {
+        showNotification('error', 'Failed to update location');
         console.error('Error updating location:', error);
       } finally {
         setLoading(false);
@@ -218,6 +242,12 @@ const Location = () => {
 
   return (
     <div className="space-y-6">
+      <Notification
+        show={notification.show}
+        type={notification.type}
+        message={notification.message}
+        onClose={() => setNotification({ ...notification, show: false })}
+      />
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}

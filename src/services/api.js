@@ -80,6 +80,14 @@ export const endpoints = {
     settings: '/user/settings',
     updateSettings: '/user/settings/update',
   },
+  locations: {
+    list: '/locations',
+    detail: (id) => `/locations/${id}`,
+  },
+  designations: {
+    list: '/designations',
+    detail: (id) => `/designations/${id}`,
+  },
 };
 
 export default API;
