@@ -20,34 +20,10 @@ import {
   flexRender,
 } from '@tanstack/react-table';
 
-const ClearableInput = ({ value, onChange, placeholder, className, required = false }) => {
-  const theme = useThemeStore((state) => state.theme);
-  
-  return (
-    <div className="relative">
-      <input
-        type="text"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder}
-        required={required}
-        className={`transition-colors duration-200 ${className}`}
-      />
-    </div>
-  );
-};
-
 const Banks = () => {
   const theme = useThemeStore((state) => state.theme);
   const [bankName, setBankName] = useState('');
-  const [banks, setBanks] = useState([
-    { bankId: 1, bankName: 'Indian Bank' },
-    { bankId: 2, bankName: 'Union Bank' },
-    { bankId: 3, bankName: 'State Bank of India' },
-    { bankId: 4, bankName: 'Canara Bank' },
-    { bankId: 5, bankName: 'HDFC Bank' },
-    { bankId: 6, bankName: 'ICICI Bank' },
-  ]);
+  const [banks, setBanks] = useState([]);
   const [globalFilter, setGlobalFilter] = useState('');
   const [sorting, setSorting] = useState([]);
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
@@ -68,28 +44,70 @@ const Banks = () => {
     });
   };
 
-  // Fetch banks (to be implemented)
   useEffect(() => {
-    // fetchBanks();
+    fetchBanks();
   }, []);
+
+  const fetchBanks = async () => {
+    try {
+      setLoading(true);
+      const response = await API.get('/Banks');
+      setBanks(response.data);
+    } catch (error) {
+      console.error('Error fetching banks:', error);
+      showNotification('error', 'Failed to fetch banks. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSubmit = async (e) => {
     if (e) e.preventDefault();
 
-    // Validate bank name
     if (!bankName.trim()) {
       showNotification('warning', 'Please enter a bank name');
       return;
     }
 
-    // API integration to be added later
-    showNotification('success', `${editingBank ? 'Updated' : 'Created'} successfully!`);
+    try {
+      setLoading(true);
+      if (editingBank) {
+        const updatedBank = { ...editingBank, bankName };
+        await API.put(`/Banks/${editingBank.bankId}`, updatedBank);
+        setBanks(prevBanks => prevBanks.map(b => 
+          b.bankId === editingBank.bankId ? updatedBank : b
+        ));
+        showNotification('success', 'Bank updated successfully!');
+      } else {
+        const response = await API.post('/Banks', { bankName });
+        setBanks(prevBanks => [...prevBanks, response.data]);
+        showNotification('success', 'Bank created successfully!');
+      }
+      
+      setBankName('');
+      setEditingBank(null);
+      setOriginalBankName('');
+    } catch (error) {
+      console.error('Error saving bank:', error);
+      const errorMessage = error.response?.data || 'Failed to save bank. Please try again.';
+      showNotification('error', errorMessage);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleEdit = (bank) => {
-    setEditingBank(bank);
-    setBankName(bank.bankName);
-    setOriginalBankName(bank.bankName);
+  const toggleBankStatus = async (bank) => {
+    try {
+      const updatedBank = { ...bank, isActive: !bank.isActive };
+      await API.put(`/Banks/${bank.bankId}`, updatedBank);
+      setBanks(prevBanks => prevBanks.map(b => 
+        b.bankId === bank.bankId ? updatedBank : b
+      ));
+      showNotification('success', `Bank ${updatedBank.isActive ? 'activated' : 'deactivated'} successfully!`);
+    } catch (error) {
+      console.error('Error updating bank status:', error);
+      showNotification('error', 'Failed to update bank status. Please try again.');
+    }
   };
 
   const columns = useMemo(() => [
@@ -122,20 +140,77 @@ const Banks = () => {
       }
     },
     {
-      id: 'actions',
-      header: '',
-      enableSorting: false,
+      accessorKey: 'isActive',
+      header: 'Status',
       cell: ({ row }) => {
         const isEditing = editingBank?.bankId === row.original.bankId;
-        const hasChanged = bankName !== originalBankName;
+        return (
+          <div className="flex items-center justify-center">
+            <label className={`relative inline-flex items-center ${isEditing ? 'cursor-pointer' : 'cursor-not-allowed'}`}>
+              <input
+                type="checkbox"
+                checked={row.original.isActive}
+                onChange={() => {
+                  if (isEditing) {
+                    const updatedBank = { ...row.original, isActive: !row.original.isActive };
+                    setBanks(prevBanks => prevBanks.map(b => 
+                      b.bankId === row.original.bankId ? updatedBank : b
+                    ));
+                  }
+                }}
+                disabled={!isEditing}
+                className="sr-only peer"
+              />
+              <div className={`w-11 h-6 bg-gray-200 rounded-full peer-focus:outline-none peer-focus:ring-4 
+                peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 
+                peer-checked:after:translate-x-full peer-checked:after:border-white 
+                after:content-[''] after:absolute after:top-[2px] after:left-[2px] 
+                after:bg-white after:border-gray-300 after:border after:rounded-full 
+                after:h-5 after:w-5 after:transition-all 
+                ${!isEditing && 'opacity-60'}
+                ${theme === 'dark' 
+                  ? 'bg-gray-700 peer-checked:bg-purple-600' 
+                  : 'bg-gray-200 peer-checked:bg-blue-600'
+                }`}>
+              </div>
+            </label>
+          </div>
+        );
+      }
+    },
+    {
+      id: 'actions',
+      header: '',
+      cell: ({ row }) => {
+        const isEditing = editingBank?.bankId === row.original.bankId;
+        const hasNameChanged = bankName !== originalBankName;
+        const hasStatusChanged = row.original.isActive !== editingBank?.isActive;
 
         return (
           <div className="flex justify-end gap-3">
             {isEditing ? (
               <>
-                {hasChanged && (
+                {(hasNameChanged || hasStatusChanged) && (
                   <button 
-                    onClick={handleSubmit}
+                    onClick={async () => {
+                      try {
+                        const updatedBank = { 
+                          ...row.original,
+                          bankName: bankName,
+                        };
+                        await API.put(`/Banks/${row.original.bankId}`, updatedBank);
+                        setBanks(prevBanks => prevBanks.map(b => 
+                          b.bankId === row.original.bankId ? updatedBank : b
+                        ));
+                        showNotification('success', 'Bank updated successfully!');
+                        setEditingBank(null);
+                        setBankName('');
+                        setOriginalBankName('');
+                      } catch (error) {
+                        console.error('Error updating bank:', error);
+                        showNotification('error', 'Failed to update bank. Please try again.');
+                      }
+                    }}
                     className={theme === 'dark' ? "text-green-400 hover:text-green-300" : "text-green-600 hover:text-green-500"}
                   >
                     <FiSave className="w-5 h-5" />
@@ -146,6 +221,10 @@ const Banks = () => {
                     setEditingBank(null);
                     setBankName('');
                     setOriginalBankName('');
+                    // Revert any status changes
+                    setBanks(prevBanks => prevBanks.map(b => 
+                      b.bankId === row.original.bankId ? editingBank : b
+                    ));
                   }}
                   className="text-red-400 hover:text-red-300"
                 >
@@ -154,7 +233,11 @@ const Banks = () => {
               </>
             ) : (
               <button 
-                onClick={() => handleEdit(row.original)}
+                onClick={() => {
+                  setEditingBank(row.original);
+                  setBankName(row.original.bankName);
+                  setOriginalBankName(row.original.bankName);
+                }}
                 className={theme === 'dark' ? "text-purple-400 hover:text-purple-300" : "text-blue-400 hover:text-blue-300"}
               >
                 <FiEdit2 className="w-5 h-5" />
@@ -164,7 +247,7 @@ const Banks = () => {
         );
       },
     },
-  ], [theme, editingBank, bankName, originalBankName]);
+  ], [theme, editingBank, bankName, originalBankName, setBanks]);
 
   const fuzzyFilter = (row, columnId, value, addMeta) => {
     const itemValue = row.getValue(columnId);
@@ -219,7 +302,6 @@ const Banks = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -233,7 +315,6 @@ const Banks = () => {
         <p className={`${subTextClass} mt-1`}>Create and manage banks</p>
       </motion.div>
 
-      {/* Add Bank Form */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -244,9 +325,10 @@ const Banks = () => {
             <label htmlFor="bankName" className={`block mb-2 ${textClass}`}>
               Bank Name <span className="text-red-500">*</span>
             </label>
-            <ClearableInput
+            <input
+              type="text"
               value={bankName}
-              onChange={setBankName}
+              onChange={(e) => setBankName(e.target.value)}
               placeholder="Enter bank name"
               required
               className={`w-full px-4 pr-10 py-2 rounded-lg border ${inputClass}`}
@@ -265,7 +347,6 @@ const Banks = () => {
         </form>
       </motion.div>
 
-      {/* Search and Table Section */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -359,7 +440,6 @@ const Banks = () => {
           </table>
         </div>
 
-        {/* Pagination */}
         <div className="flex items-center justify-between pt-4">
           <div className="flex items-center gap-2">
             <select
@@ -408,7 +488,6 @@ const Banks = () => {
         </div>
       </motion.div>
 
-      {/* Notification component */}
       <Notification
         show={notification.show}
         type={notification.type}
