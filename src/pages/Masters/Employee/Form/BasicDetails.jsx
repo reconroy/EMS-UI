@@ -54,7 +54,7 @@ const BasicDetails = ({ formData, setFormData, onNext }) => {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-
+  
     if (type === 'select-one') {
       const field = ['workingLocation', 'department', 'designation', 'role'].includes(name);
       if (field) {
@@ -62,23 +62,20 @@ const BasicDetails = ({ formData, setFormData, onNext }) => {
         const selectedOption = select.options[select.selectedIndex];
         const data = JSON.parse(selectedOption.dataset.data || '{}');
         
-        console.log(`Selected ${name}:`, {
-          value,
-          data,
-          dataset: selectedOption.dataset
-        });
-
-        setFormData(prev => ({
-          ...prev,
-          [`${name}Id`]: data.id,
-          [`${name}Name`]: data.name,
-          [name]: value,
-          // Specifically handle role
-          ...(name === 'role' ? {
+        if (name === 'role') {
+          setFormData(prev => ({
+            ...prev,
             roleId: data.id,
             roleName: data.name
-          } : {})
-        }));
+          }));
+        } else {
+          setFormData(prev => ({
+            ...prev,
+            [`${name}Id`]: data.id,
+            [`${name}Name`]: data.name,
+            [name]: value
+          }));
+        }
         return;
       }
     }
@@ -88,7 +85,6 @@ const BasicDetails = ({ formData, setFormData, onNext }) => {
       [name]: type === 'checkbox' ? checked : value
     }));
   };
-
   const handleSubmit = (e) => {
     e.preventDefault();
     if (isConfirmed) onNext();

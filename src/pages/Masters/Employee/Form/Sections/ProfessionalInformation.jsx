@@ -144,19 +144,27 @@ const ProfessionalInformation = ({ theme, formData, handleChange }) => {
             </label>
             {field.type === 'select' ? (
               <select
-                name={field.name}
-                value={formData[field.name] || ''}
-                onChange={handleChange}
-                className={`w-full rounded-md border px-3 py-2 ${theme === 'light' ? 'border-gray-300 bg-white text-gray-900' : 'border-gray-600 bg-gray-800 text-white'}`}
-                required={field.required}
-              >
-                <option value="">Select {field.label}</option>
-                {field.options.map((option) => (
-                  <option key={`${field.name}_${option.value}`} value={option.value} data-data={JSON.stringify(option.data)}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
+              name={field.name}
+              value={field.name === 'role' ? formData.roleId : formData[field.name] || ''}
+              onChange={handleChange}
+              className={`w-full rounded-md border px-3 py-2 ${
+                theme === 'light' 
+                  ? 'border-gray-300 bg-white text-gray-900' 
+                  : 'border-gray-600 bg-gray-800 text-white'
+              }`}
+              required={field.required}
+            >
+              <option value="">Select {field.label}</option>
+              {field.options.map((option) => (
+                <option 
+                  key={`${field.name}_${option.value}`} 
+                  value={option.value}
+                  data-data={JSON.stringify(option.data)}
+                >
+                  {option.label}
+                </option>
+              ))}
+            </select>
             ) : (
               <input
                 type={field.type || 'text'}
