@@ -10,7 +10,8 @@ import {
   FiUserCheck,
   FiGrid,
   FiMapPin,
-  FiBriefcase
+  FiBriefcase,
+  FiDollarSign
 } from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion";
 import { useThemeStore } from '../store/themeStore';
@@ -34,6 +35,7 @@ const Sidebar = ({ onClose, isMobile, isCollapsed, onCollapse }) => {
         { path: "/masters/departments", icon: <FiGrid className="w-4 h-4" />, label: "Departments" },
         { path: "/masters/locations", icon: <FiMapPin className="w-4 h-4" />, label: "Locations" },
         { path: "/masters/designations", icon: <FiBriefcase className="w-4 h-4" />, label: "Designations" },
+        { path: "/masters/banks", icon: <FiDollarSign className="w-4 h-4" />, label: "Banks" },
       ]
     },
   ];
