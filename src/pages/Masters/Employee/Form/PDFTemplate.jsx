@@ -126,11 +126,11 @@ const PDFTemplate = ({ formData }) => {
         <div className="grid grid-cols-2 gap-x-12 gap-y-4">
           <div>
             <p className="text-sm text-gray-600">Aadhaar Number</p>
-            <p className="font-medium">{formData.aadhaarNo}</p>
+            <p className="font-medium">{formData.aadhaarNumber}</p>
           </div>
           <div>
             <p className="text-sm text-gray-600">PAN Number</p>
-            <p className="font-medium">{formData.panNo}</p>
+            <p className="font-medium">{formData.panNumber}</p>
           </div>
           <div>
             <p className="text-sm text-gray-600">Bank Name</p>
