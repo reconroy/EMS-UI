@@ -120,8 +120,7 @@ const ProfessionalInformation = ({ theme, formData, handleChange }) => {
     {
       label: 'Date of Joining',
       name: 'doj',
-      type: 'text',
-      placeholder: 'dd/mm/yyyy',
+      type: 'date',
       required: true
     }
   ];
@@ -144,8 +143,32 @@ const ProfessionalInformation = ({ theme, formData, handleChange }) => {
             </label>
             {field.type === 'select' ? (
               <select
+                name={field.name}
+                value={field.name === 'role' ? formData.roleId : formData[field.name] || ''}
+                onChange={handleChange}
+                className={`w-full rounded-md border px-3 py-2 ${
+                  theme === 'light' 
+                    ? 'border-gray-300 bg-white text-gray-900' 
+                    : 'border-gray-600 bg-gray-800 text-white'
+                }`}
+                required={field.required}
+              >
+                <option value="">Select {field.label}</option>
+                {field.options.map((option) => (
+                  <option 
+                    key={`${field.name}_${option.value}`} 
+                    value={option.value}
+                    data-data={JSON.stringify(option.data)}
+                  >
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            ) : field.type === 'date' ? (
+              <input
+              type="date"
               name={field.name}
-              value={field.name === 'role' ? formData.roleId : formData[field.name] || ''}
+              value={formData[field.name] ? formData[field.name].split('/').reverse().join('-') : ''}
               onChange={handleChange}
               className={`w-full rounded-md border px-3 py-2 ${
                 theme === 'light' 
@@ -153,18 +176,7 @@ const ProfessionalInformation = ({ theme, formData, handleChange }) => {
                   : 'border-gray-600 bg-gray-800 text-white'
               }`}
               required={field.required}
-            >
-              <option value="">Select {field.label}</option>
-              {field.options.map((option) => (
-                <option 
-                  key={`${field.name}_${option.value}`} 
-                  value={option.value}
-                  data-data={JSON.stringify(option.data)}
-                >
-                  {option.label}
-                </option>
-              ))}
-            </select>
+            />
             ) : (
               <input
                 type={field.type || 'text'}

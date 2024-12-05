@@ -79,6 +79,16 @@ const BasicDetails = ({ formData, setFormData, onNext }) => {
         return;
       }
     }
+  
+    if (type === 'date') {
+      const [year, month, day] = value.split('-');
+      const formattedDate = `${day}/${month}/${year}`;
+      setFormData(prev => ({
+        ...prev,
+        [name]: formattedDate
+      }));
+      return;
+    }
     
     setFormData(prev => ({
       ...prev,
