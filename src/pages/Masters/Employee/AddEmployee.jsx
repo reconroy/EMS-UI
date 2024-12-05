@@ -75,34 +75,35 @@ const AddEmployee = () => {
       };
 
       const employeeData = {
-        employee: {
-          FullName: formData.fullName,
-          NickName: formData.nickName || '',
-          FatherName: formData.fatherName,
-          MotherName: formData.motherName,
-          MaritalStatus: formData.maritalStatus,
-          Qualification: formData.qualification,
-          Email: formData.email,
-          Mobile1: formData.mobile1,
-          Mobile2: formData.mobile2 || '',
-          PAddress: formData.pAddress,
-          PPinCode: formData.pPinCode,
-          PDistrict: formData.pDistrict,
-          CAddress: formData.cAddress,
-          CPinCode: formData.cPinCode,
-          CDistrict: formData.cDistrict,
-          DOB: formatDate(formData.dob),
-          DOJ: formatDate(formData.doj),
-          gender: formData.gender,
-          DepartmentID: parseInt(formData.departmentId),
-          RoleID: parseInt(formData.roleId),
-          Designation: formData.designation,
-          AadhaarNumber: formData.aadhaarNumber,
-          PanNumber: formData.panNumber,
-          IsActive: formData.isActive === undefined ? true : formData.isActive,
-          WorkingLocation: formData.workingLocation
-        }
+        empID: 0,
+        fullName: formData.fullName || 'string',
+        nickName: formData.nickName || 'string',
+        fatherName: formData.fatherName || 'string',
+        motherName: formData.motherName || 'string',
+        maritalStatus: formData.maritalStatus || 'string',
+        qualification: formData.qualification || 'string',
+        email: formData.email || 'string',
+        mobile1: formData.mobile1 || 'string',
+        mobile2: formData.mobile2 || 'string',
+        pAddress: formData.pAddress || 'string',
+        pPinCode: formData.pPinCode || 'string',
+        pDistrict: formData.pDistrict || 'string',
+        cAddress: formData.cAddress || 'string',
+        cPinCode: formData.cPinCode || 'string',
+        cDistrict: formData.cDistrict || 'string',
+        dob: formatDate(formData.dob) || '2024-12-05',
+        doj: formatDate(formData.doj) || '2024-12-05',
+        gender: formData.gender || 'string',
+        departmentID: Number(formData.departmentId) || 0,
+        roleID: Number(formData.roleId) || 0,
+        designation: formData.designation || 'string',
+        aadhaarNumber: formData.aadhaarNumber || 'string',
+        panNumber: formData.panNumber || 'string',
+        isActive: formData.isActive === undefined ? true : formData.isActive,
+        workingLocation: formData.workingLocation || 'string'
       };
+
+      console.log('Employee Data:', employeeData);
 
       const response = await API.post('/Employees', employeeData);
       
