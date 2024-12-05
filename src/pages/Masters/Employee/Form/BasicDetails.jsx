@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState , useEffect } from 'react';
 import { useThemeStore } from '../../../../store/themeStore';
 import { FiArrowRight } from 'react-icons/fi';
 import { motion } from 'framer-motion';
@@ -6,298 +6,264 @@ import { motion } from 'framer-motion';
 const BasicDetails = ({ formData, setFormData, onNext }) => {
   const theme = useThemeStore((state) => state.theme);
   const [isConfirmed, setIsConfirmed] = useState(false);
-  const [isRequiredFields, setIsRequiredFields] = useState(false);
+
+  // Mock data for dropdowns
+  const roles = [
+    { roleId: 1, roleName: "Admin" },
+    { roleId: 2, roleName: "User" },
+    { roleId: 3, roleName: "Employee" },
+  ];
+
+  const departments = [
+    "IT",
+    "Accounts",
+    "Admin",
+    "CTP",
+    "Printing",
+  ];
+
+  const designations = [
+    "Developer",
+    "CA",
+    "Manager",
+    "Designer",
+  ];
+
+  const locations = [
+    "New York",
+    "San Francisco",
+    "London",
+    "Mumbai",
+  ];
+
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
+    const { name, value, type, checked } = e.target;
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: type === 'checkbox' ? checked : value,
     }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (isConfirmed) {
-      onNext();
-    }
+    if (isConfirmed) onNext();
   };
-
-  const FormSection = ({ title, children }) => (
-    <div className="space-y-4">
-      <h4 className={`text-lg font-medium border-b pb-2 ${
-        theme === 'light' 
-          ? 'text-gray-900 border-gray-200' 
-          : 'text-white border-gray-700'
-      }`}>
-        {title}
-      </h4>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {children}
-      </div>
-    </div>
-  );
-
-  const InputField = ({ label, name, type = "text", required = false }) => (
-    <div className="space-y-1">
-      <label htmlFor={name} className={`block text-sm font-medium ${
-        theme === 'light' ? 'text-gray-900' : 'text-gray-300'
-      }`}>
-        {label} {required && <span className="text-red-500">*</span>}
-      </label>
-      <input
-        type={type}
-        id={name}
-        name={name}
-        value={formData[name] || ''}
-        onChange={handleChange}
-        className={`w-full rounded-md border px-3 py-2 ${
-          theme === 'light'
-            ? 'border-gray-300 bg-white text-gray-900 placeholder-gray-400'
-            : 'border-gray-600 bg-gray-800 text-white placeholder-gray-500'
-        } focus:ring-2 focus:ring-purple-500 focus:border-transparent`}
-        required={required}
-      />
-    </div>
-  );
-
-  // Update select elements with similar theme-aware styles
-  const SelectField = ({ label, name, options, required = false }) => (
-    <div className="space-y-1">
-      <label className={`block text-sm font-medium ${
-        theme === 'light' ? 'text-gray-900' : 'text-gray-300'
-      }`}>
-        {label} {required && <span className="text-red-500">*</span>}
-      </label>
-      <select
-        name={name}
-        value={formData[name] || ''}
-        onChange={handleChange}
-        className={`w-full rounded-md border px-3 py-2 ${
-          theme === 'light'
-            ? 'border-gray-300 bg-white text-gray-900'
-            : 'border-gray-600 bg-gray-800 text-white'
-        }`}
-        required={required}
-      >
-        {options.map(option => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </select>
-    </div>
-  );
-
-  // Update textarea with theme-aware styles
-  const TextArea = ({ label, name, required = false }) => (
-    <div className="col-span-full">
-      <label className={`block text-sm font-medium mb-1 ${
-        theme === 'light' ? 'text-gray-900' : 'text-gray-300'
-      }`}>
-        {label} {required && <span className="text-red-500">*</span>}
-      </label>
-      <textarea
-        name={name}
-        value={formData[name] || ''}
-        onChange={handleChange}
-        rows={3}
-        className={`w-full rounded-md border px-3 py-2 ${
-          theme === 'light'
-            ? 'border-gray-300 bg-white text-gray-900'
-            : 'border-gray-600 bg-gray-800 text-white'
-        }`}
-        required={required}
-      />
-    </div>
-  );
-
+  useEffect(() => {
+    if (formData.isSameAsPermanent) {
+      setFormData((prev) => ({
+        ...prev,
+        cAddress: prev.pAddress,
+        cPinCode: prev.pPinCode,
+        cDistrict: prev.pDistrict,
+      }));
+    }
+  }, [formData.pAddress, formData.pPinCode, formData.pDistrict, formData.isSameAsPermanent, setFormData]);
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
       {/* Personal Information */}
-      <FormSection title="Personal Information">
-        <InputField label="Full Name" name="fullName" required={isRequiredFields} />
-        <InputField label="Alias Name" name="aliasName" />
-        <InputField label="Father's Name" name="fatherName" required={isRequiredFields} />
-        <InputField label="Mother's Name" name="motherName" required={isRequiredFields} />
-        <InputField label="Date of Birth" name="dateOfBirth" type="date" required={isRequiredFields} />
-        <SelectField 
-          label="Gender" 
-          name="gender" 
-          required={isRequiredFields}
-          options={[
-            { value: "", label: "Select Gender" },
-            { value: "M", label: "Male" },
-            { value: "F", label: "Female" },
-            { value: "O", label: "Other" }
-          ]}
-        />
-        <SelectField 
-          label="Marital Status" 
-          name="maritalStatus"
-          options={[
-            { value: "", label: "Select Status" },
-            { value: "single", label: "Single" },
-            { value: "married", label: "Married" },
-            { value: "divorced", label: "Divorced" },
-            { value: "widowed", label: "Widowed" }
-          ]}
-        />
-        <InputField label="Qualification" name="qualification" required={isRequiredFields} />
-      </FormSection>
+      <div className="space-y-4">
+        <h4 className={`text-lg font-medium border-b pb-2 ${theme === 'light' ? 'text-gray-900 border-gray-200' : 'text-white border-gray-700'}`}>
+          Personal Information
+        </h4>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {[{ label: 'Full Name', name: 'fullName', required: true },
+          { label: 'Nick Name (Alias Name)', name: 'nickName' },
+          { label: "Father's Name", name: 'fatherName', required: true },
+          { label: "Mother's Name", name: 'motherName', required: true },
+          { label: 'Date of Birth', name: 'dob', type: 'date', required: true },
+          { label: 'Gender', name: 'gender', type: 'select', options: ['Male', 'Female', 'Other'], required: true },
+          { label: 'Marital Status', name: 'maritalStatus', type: 'select', options: ['Single', 'Married', 'Divorced', 'Widowed'] },
+          { label: 'Qualification', name: 'qualification', type: 'select', options: ['10th', '12th', 'Graduate', 'Post-Graduate'], required: true }
+          ].map((field) => (
+            <div key={field.name} className="space-y-1">
+              <label className={`block text-sm font-medium ${theme === 'light' ? 'text-gray-900' : 'text-gray-300'}`}>
+                {field.label} {field.required && <span className="text-red-500">*</span>}
+              </label>
+              {field.type === 'select' ? (
+                <select
+                  name={field.name}
+                  value={formData[field.name] || ''}
+                  onChange={handleChange}
+                  className={`w-full rounded-md border px-3 py-2 ${theme === 'light' ? 'border-gray-300 bg-white text-gray-900' : 'border-gray-600 bg-gray-800 text-white'}`}
+                  required={field.required}
+                >
+                  <option value="">Select {field.label}</option>
+                  {field.options.map((option) => (
+                    <option key={option} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <input
+                  type={field.type || 'text'}
+                  name={field.name}
+                  value={formData[field.name] || ''}
+                  onChange={handleChange}
+                  className={`w-full rounded-md border px-3 py-2 ${theme === 'light' ? 'border-gray-300 bg-white text-gray-900' : 'border-gray-600 bg-gray-800 text-white'}`}
+                  required={field.required}
+                />
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
 
       {/* Contact Information */}
-      <FormSection title="Contact Information">
-        <InputField label="Mobile 1" name="mobile1" type="tel" required={isRequiredFields} />
-        <InputField label="Mobile 2" name="mobile2" type="tel" />
-        <InputField label="Email Address" name="email" type="email" required={isRequiredFields} />
-      </FormSection>
+      <div className="space-y-4">
+        <h4 className={`text-lg font-medium border-b pb-2 ${theme === 'light' ? 'text-gray-900 border-gray-200' : 'text-white border-gray-700'}`}>
+          Contact Information
+        </h4>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {[{ label: 'Email Address', name: 'email', type: 'email', required: true },
+          { label: 'Mobile 1', name: 'mobile1', type: 'tel', required: true },
+          { label: 'Mobile 2', name: 'mobile2', type: 'tel' }
+          ].map((field) => (
+            <div key={field.name} className="space-y-1">
+              <label className={`block text-sm font-medium ${theme === 'light' ? 'text-gray-900' : 'text-gray-300'}`}>
+                {field.label} {field.required && <span className="text-red-500">*</span>}
+              </label>
+              <input
+                type={field.type || 'text'}
+                name={field.name}
+                value={formData[field.name] || ''}
+                onChange={handleChange}
+                className={`w-full rounded-md border px-3 py-2 ${theme === 'light' ? 'border-gray-300 bg-white text-gray-900' : 'border-gray-600 bg-gray-800 text-white'}`}
+                required={field.required}
+              />
+            </div>
+          ))}
+        </div>
+      </div>
 
       {/* Address Information */}
-      <FormSection title="Address Information">
-        <TextArea label="Permanent Address" name="permanentAddress" required={isRequiredFields} />
-        <InputField label="Permanent Pin Code" name="permanentPinCode" required={isRequiredFields} />
-        <TextArea label="Correspondence Address" name="correspondenceAddress" />
-        <InputField label="Correspondence Pin Code" name="correspondencePinCode" />
-        <InputField label="Post Office" name="postOffice" required={isRequiredFields} />
-        <InputField label="District" name="district" required={isRequiredFields} />
-      </FormSection>
-
-      {/* Professional Information */}
-      <FormSection title="Professional Information">
-        <InputField label="Location" name="location" required={isRequiredFields} />
-        <InputField label="Department" name="department" required={isRequiredFields} />
-        <InputField label="Designation" name="designation" required={isRequiredFields} />
-        <InputField label="Date of Joining" name="dateOfJoining" type="date" required={isRequiredFields} />
-      </FormSection>
-
-      {/* Identity Information */}
-      <FormSection title="Identity Information">
-        <InputField label="Aadhaar Number" name="aadhaarNo" required={isRequiredFields} />
-        <InputField label="PAN Number" name="panNo" required={isRequiredFields} />
-      </FormSection>
-
-      {/* Bank Details */}
-      <FormSection title="Bank Details">
-        <InputField label="Bank Name" name="bankName" required={isRequiredFields} />
-        <InputField label="Branch Name" name="branchName" required={isRequiredFields} />
-        <InputField label="Account Number" name="accountNo" required={isRequiredFields} />
-        <InputField label="IFSC Code" name="ifscCode" required={isRequiredFields} />
-      </FormSection>
-
-      {/* Dependent Family Details */}
-      <FormSection title="Dependent Family Details">
-        <div className="col-span-full">
-          <table className={`w-full border-collapse border ${
-            theme === 'light' ? 'border-gray-300' : 'border-gray-600'
-          }`}>
-            <thead>
-              <tr className={theme === 'light' ? 'bg-gray-50' : 'bg-gray-700'}>
-                <th className={`border p-2 ${
-                  theme === 'light' ? 'border-gray-300' : 'border-gray-600'
-                }`}>Name</th>
-                <th className={`border p-2 ${
-                  theme === 'light' ? 'border-gray-300' : 'border-gray-600'
-                }`}>Relation</th>
-                <th className={`border p-2 ${
-                  theme === 'light' ? 'border-gray-300' : 'border-gray-600'
-                }`}>Age</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td className={`border p-2 ${
-                  theme === 'light' ? 'border-gray-300' : 'border-gray-600'
-                }`}>
-                  <input
-                    type="text"
-                    className={`w-full ${
-                      theme === 'light'
-                        ? 'bg-white text-gray-900 placeholder-gray-400'
-                        : 'bg-transparent text-white placeholder-gray-500'
-                    }`}
-                    placeholder="Enter name"
-                  />
-                </td>
-                <td className={`border p-2 ${
-                  theme === 'light' ? 'border-gray-300' : 'border-gray-600'
-                }`}>
-                  <input
-                    type="text"
-                    className={`w-full ${
-                      theme === 'light'
-                        ? 'bg-white text-gray-900 placeholder-gray-400'
-                        : 'bg-transparent text-white placeholder-gray-500'
-                    }`}
-                    placeholder="Enter relation"
-                  />
-                </td>
-                <td className={`border p-2 ${
-                  theme === 'light' ? 'border-gray-300' : 'border-gray-600'
-                }`}>
-                  <input
-                    type="number"
-                    className={`w-full ${
-                      theme === 'light'
-                        ? 'bg-white text-gray-900 placeholder-gray-400'
-                        : 'bg-transparent text-white placeholder-gray-500'
-                    }`}
-                    placeholder="Enter age"
-                  />
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          <button
-            type="button"
-            className={`mt-2 text-sm font-medium ${
-              theme === 'light' 
-                ? 'text-blue-600 hover:text-blue-700'
-                : 'text-purple-600 hover:text-purple-700'
-            }`}
-            onClick={() => {/* We'll implement add row functionality later */}}
-          >
-            + Add Dependent
-          </button>
+      <div className="space-y-4">
+        <h4 className={`text-lg font-medium border-b pb-2 ${theme === 'light' ? 'text-gray-900' : 'text-white border-gray-700'}`}>
+          Address Information
+        </h4>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {[{ label: 'Permanent Address', name: 'pAddress', required: true },
+          { label: 'Permanent Pincode', name: 'pPinCode', type: 'number', required: true },
+          { label: 'Permanent District', name: 'pDistrict', required: true },
+          { label: 'Corresponding Address', name: 'cAddress' },
+          { label: 'Corresponding Pincode', name: 'cPinCode', type: 'number' },
+          { label: 'Corresponding District', name: 'cDistrict' }
+          ].map((field) => (
+            <div key={field.name} className="space-y-1">
+              <label className={`block text-sm font-medium ${theme === 'light' ? 'text-gray-900' : 'text-gray-300'}`}>
+                {field.label} {field.required && <span className="text-red-500">*</span>}
+              </label>
+              <input
+                type={field.type || 'text'}
+                name={field.name}
+                value={formData[field.name] || ''}
+                onChange={handleChange}
+                className={`w-full rounded-md border px-3 py-2 ${theme === 'light' ? 'border-gray-300 bg-white text-gray-900' : 'border-gray-600 bg-gray-800 text-white'}`}
+                required={field.required}
+              />
+            </div>
+          ))}
         </div>
-      </FormSection>
-
-      {/* Confirmation and Submit Section */}
-      <div className="space-y-4 pt-6 border-t border-gray-200 dark:border-gray-700">
-        <div className="flex items-center gap-3">
+        {/* Same As Permanent Checkbox */}
+        <div className="flex items-center space-x-2">
           <input
             type="checkbox"
-            id="confirmDetails"
-            checked={isConfirmed}
-            onChange={(e) => setIsConfirmed(e.target.checked)}
-            className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+            checked={formData.isSameAsPermanent}
+            onChange={(e) => {
+              const { checked } = e.target;
+              setFormData((prev) => {
+                const updatedData = { ...prev, isSameAsPermanent: checked };
+                if (checked) {
+                  updatedData.cAddress = prev.pAddress;
+                  updatedData.cPinCode = prev.pPinCode;
+                  updatedData.cDistrict = prev.pDistrict;
+                } else {
+                  updatedData.cAddress = '';
+                  updatedData.cPinCode = '';
+                  updatedData.cDistrict = '';
+                }
+                return updatedData;
+              });
+            }}
+            className="h-4 w-4"
           />
-          <label 
-            htmlFor="confirmDetails" 
-            className={`text-sm ${theme === 'light' ? 'text-gray-900' : 'text-gray-300'}`}
-          >
-            I confirm that all the details provided above are correct and accurate.
-          </label>
+          <span className={`text-sm ${theme === 'light' ? 'text-gray-900' : 'text-gray-300'}`}>
+            Same As Permanent
+          </span>
         </div>
 
-        <motion.button
-          type="submit"
-          disabled={!isConfirmed}
-          whileHover={isConfirmed ? { scale: 1.02 } : {}}
-          whileTap={isConfirmed ? { scale: 0.98 } : {}}
-          className={`w-full py-3 px-4 rounded-lg flex items-center justify-center gap-2 
-            ${isConfirmed 
-              ? theme === 'light'
-                ? 'bg-blue-600 hover:bg-blue-700 text-white cursor-pointer'
-                : 'bg-purple-600 hover:bg-purple-700 text-white cursor-pointer'
-              : 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
-            } transition-colors duration-200`}
-        >
-          <span>Proceed to Document Upload</span>
-          <FiArrowRight className="w-4 h-4" />
-        </motion.button>
       </div>
+
+      {/* Professional Information */}
+      <div className="space-y-4">
+        <h4 className={`text-lg font-medium border-b pb-2 ${theme === 'light' ? 'text-gray-900 border-gray-200' : 'text-white border-gray-700'}`}>
+          Professional Information
+        </h4>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {[{ label: 'Working Location', name: 'workingLocation', required: true },
+          { label: 'Department', name: 'department', required: true },
+          { label: 'Designation', name: 'designation', required: true },
+          { label: 'Date of Joining', name: 'doj', type: 'date', required: true },
+          { label: 'Role', name: 'role', type: 'select', options: ['User', 'Employee', 'Admin'], required: true }
+          ].map((field) => (
+            <div key={field.name} className="space-y-1">
+              <label className={`block text-sm font-medium ${theme === 'light' ? 'text-gray-900' : 'text-gray-300'}`}>
+                {field.label} {field.required && <span className="text-red-500">*</span>}
+              </label>
+              {field.type === 'select' ? (
+                <select
+                  name={field.name}
+                  value={formData[field.name] || ''}
+                  onChange={handleChange}
+                  className={`w-full rounded-md border px-3 py-2 ${theme === 'light' ? 'border-gray-300 bg-white text-gray-900' : 'border-gray-600 bg-gray-800 text-white'}`}
+                  required={field.required}
+                >
+                  <option value="">Select {field.label}</option>
+                  {field.options?.map((option) => (
+                    <option key={option} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <input
+                  type={field.type || 'text'}
+                  name={field.name}
+                  value={formData[field.name] || ''}
+                  onChange={handleChange}
+                  className={`w-full rounded-md border px-3 py-2 ${theme === 'light' ? 'border-gray-300 bg-white text-gray-900' : 'border-gray-600 bg-gray-800 text-white'}`}
+                  required={field.required}
+                />
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Confirmation */}
+      <div className="flex items-center space-x-2">
+        <input
+          type="checkbox"
+          checked={isConfirmed}
+          onChange={() => setIsConfirmed(!isConfirmed)}
+          className="h-4 w-4"
+        />
+        <span className={`text-sm ${theme === 'light' ? 'text-gray-900' : 'text-gray-300'}`}>
+          I confirm that the above information is accurate.
+        </span>
+      </div>
+
+      <motion.button
+        type="submit"
+        disabled={!isConfirmed}
+        className={`mt-6 w-full py-2 px-4 bg-blue-600 text-white rounded-md ${!isConfirmed ? 'opacity-50' : 'hover:bg-blue-700'}`}
+        whileTap={{ scale: 0.95 }}
+      >
+        <FiArrowRight className="inline-block mr-2" />
+        Next
+      </motion.button>
     </form>
   );
 };
 
-export default BasicDetails; 
+export default BasicDetails;
