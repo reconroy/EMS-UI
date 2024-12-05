@@ -80,7 +80,7 @@ const BasicDetails = ({ formData, setFormData, onNext }) => {
       }
     }
   
-    if (type === 'date') {
+    if (type === 'date' && (name === 'dob' || name === 'doj')) {
       const [year, month, day] = value.split('-');
       const formattedDate = `${day}/${month}/${year}`;
       setFormData(prev => ({
@@ -95,6 +95,7 @@ const BasicDetails = ({ formData, setFormData, onNext }) => {
       [name]: type === 'checkbox' ? checked : value
     }));
   };
+  
   const handleSubmit = (e) => {
     e.preventDefault();
     if (isConfirmed) onNext();

@@ -12,7 +12,7 @@ const PersonalInformation = ({ theme, formData, handleChange }) => {
           { label: 'Nick Name (Alias Name)', name: 'nickName' },
           { label: "Father's Name", name: 'fatherName', required: true },
           { label: "Mother's Name", name: 'motherName', required: true },
-          { label: 'Date of Birth', name: 'dob', type: 'text', placeholder: 'dd/mm/yyyy', required: true },
+          { label: 'Date of Birth', name: 'dob', type: 'date', required: true },
           { label: 'Gender', name: 'gender', type: 'select', options: ['Male', 'Female', 'Other'], required: true },
           { label: 'Marital Status', name: 'maritalStatus', type: 'select', options: ['Single', 'Married', 'Divorced', 'Widowed'] },
           { label: 'Qualification', name: 'qualification', type: 'select', options: ['10th', '12th', 'Graduate', 'Post-Graduate'], required: true }
@@ -36,9 +36,18 @@ const PersonalInformation = ({ theme, formData, handleChange }) => {
                   </option>
                 ))}
               </select>
+            ) : field.type === 'date' ? (
+              <input
+                type="date"
+                name={field.name}
+                value={formData[field.name] ? formData[field.name].split('/').reverse().join('-') : ''}
+                onChange={handleChange}
+                className={`w-full rounded-md border px-3 py-2 ${theme === 'light' ? 'border-gray-300 bg-white text-gray-900' : 'border-gray-600 bg-gray-800 text-white'}`}
+                required={field.required}
+              />
             ) : (
               <input
-                type={field.type || 'text'}
+                type="text"
                 name={field.name}
                 value={formData[field.name] || ''}
                 onChange={handleChange}
@@ -54,4 +63,4 @@ const PersonalInformation = ({ theme, formData, handleChange }) => {
   );
 };
 
-export default PersonalInformation; 
+export default PersonalInformation;
