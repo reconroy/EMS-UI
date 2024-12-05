@@ -3,6 +3,8 @@ import { motion } from 'framer-motion';
 import { useThemeStore } from '../../../store/themeStore';
 import { useNavigate } from 'react-router-dom';
 import { FiArrowLeft, FiSave, FiArrowRight } from 'react-icons/fi';
+import Notification from '../../../components/Notification';
+import API from '../../../services/api';
 
 import StepIndicator from './Form/StepIndicator';
 import BasicDetails from './Form/BasicDetails';
@@ -21,6 +23,11 @@ const AddEmployee = () => {
     return savedData ? JSON.parse(savedData) : {};
   });
   const [isConfirmed, setIsConfirmed] = useState(false);
+  const [notification, setNotification] = useState({
+    show: false,
+    type: 'success',
+    message: '',
+  });
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(formData));
@@ -39,10 +46,87 @@ const AddEmployee = () => {
     navigate('/masters/employee/view');
   };
 
-  const handleSubmit = () => {
-    if (isConfirmed) {
-      // Submit logic here
-      console.log('Form submitted:', formData);
+  const showNotification = (type, message) => {
+    setNotification({
+      show: true,
+      type,
+      message,
+    });
+  };
+
+  const handleSubmit = async () => {
+    if (!isConfirmed) {
+      showNotification('warning', 'Please confirm the details before submitting');
+      return;
+    }
+
+    if (currentStep !== 4) {
+      showNotification('warning', 'Please complete all steps before submitting');
+      return;
+    }
+
+    try {
+      showNotification('processing', 'Registering employee...');
+      
+      const formatDate = (dateStr) => {
+        if (!dateStr) return null;
+        const [day, month, year] = dateStr.split('/');
+        return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+      };
+
+      const employeeData = {
+        employee: {
+          FullName: formData.fullName,
+          NickName: formData.nickName || '',
+          FatherName: formData.fatherName,
+          MotherName: formData.motherName,
+          MaritalStatus: formData.maritalStatus,
+          Qualification: formData.qualification,
+          Email: formData.email,
+          Mobile1: formData.mobile1,
+          Mobile2: formData.mobile2 || '',
+          PAddress: formData.pAddress,
+          PPinCode: formData.pPinCode,
+          PDistrict: formData.pDistrict,
+          CAddress: formData.cAddress,
+          CPinCode: formData.cPinCode,
+          CDistrict: formData.cDistrict,
+          DOB: formatDate(formData.dob),
+          DOJ: formatDate(formData.doj),
+          gender: formData.gender,
+          DepartmentID: parseInt(formData.departmentId),
+          RoleID: parseInt(formData.roleId),
+          Designation: formData.designation,
+          AadhaarNumber: formData.aadhaarNumber,
+          PanNumber: formData.panNumber,
+          IsActive: formData.isActive === undefined ? true : formData.isActive,
+          WorkingLocation: formData.workingLocation
+        }
+      };
+
+      const response = await API.post('/Employees', employeeData);
+      
+      if (response.status === 201 || response.status === 200) {
+        showNotification('success', 'Employee registered successfully!');
+        
+        // Clear all localStorage
+        localStorage.removeItem(STORAGE_KEY);
+        localStorage.removeItem('empIdentityDetails');
+        localStorage.removeItem('empBankDetails');
+        
+        // Navigate to employee list
+        navigate('/masters/employee/view');
+      }
+    } catch (error) {
+      console.error('Error registering employee:', error);
+      if (error.response?.data?.errors) {
+        const errorMessages = Object.values(error.response.data.errors)
+          .flat()
+          .join(', ');
+        showNotification('error', errorMessages);
+      } else {
+        showNotification('error', 'Failed to register employee. Please try again.');
+      }
     }
   };
 
@@ -67,6 +151,12 @@ const AddEmployee = () => {
 
   return (
     <div className="space-y-6">
+      <Notification
+        show={notification.show}
+        type={notification.type}
+        message={notification.message}
+        onClose={() => setNotification({ ...notification, show: false })}
+      />
       {/* Header with Navigation */}
       <div className="flex items-center justify-between">
         <motion.div
