@@ -1,9 +1,16 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { FiCheck, FiX } from 'react-icons/fi';
 
 const Status = ({ theme, formData, handleChange }) => {
   const handleStatusChange = () => {
-    handleChange({ target: { name: 'isActive', checked: !formData.isActive } });
+    handleChange({
+      target: {
+        name: 'isActive',
+        checked: !formData.isActive,
+        type: 'checkbox'
+      }
+    });
   };
 
   return (
@@ -11,88 +18,62 @@ const Status = ({ theme, formData, handleChange }) => {
       <h4 className={`text-lg font-medium border-b pb-2 ${theme === 'light' ? 'text-gray-900 border-gray-200' : 'text-white border-gray-700'}`}>
         Employee Status
       </h4>
-      
+
       <div className={`p-6 rounded-lg border ${theme === 'light' ? 'bg-white border-gray-200' : 'bg-gray-800 border-gray-700'}`}>
-        <div 
-          onClick={handleStatusChange}
-          className={`relative cursor-pointer rounded-xl p-4 transition-all duration-300 
-            ${theme === 'light' 
-              ? 'hover:bg-gray-50' 
-              : 'hover:bg-gray-700'}`}
-        >
-          <div className="flex items-center justify-between">
-            <motion.div 
-              className="flex items-center gap-4"
-              initial={false}
-              animate={{ x: 0 }}
-              whileHover={{ x: 5 }}
+        <div className="flex items-center justify-between">
+          <div className="space-y-2">
+            <h5 className={`font-medium ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>
+              Current Status
+            </h5>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.2 }}
+              className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+                formData.isActive 
+                  ? (theme === 'light' ? 'bg-green-100 text-green-800' : 'bg-green-900 text-green-300')
+                  : (theme === 'light' ? 'bg-red-100 text-red-800' : 'bg-red-900 text-red-300')
+              }`}
             >
-              <motion.div
-                initial={false}
-                animate={{
-                  scale: formData.isActive ? 1 : 0.95,
-                  opacity: formData.isActive ? 1 : 0.7
-                }}
-                className={`h-12 w-12 rounded-lg flex items-center justify-center
-                  ${formData.isActive 
-                    ? (theme === 'light' ? 'bg-blue-100 text-blue-600' : 'bg-purple-900 text-purple-300')
-                    : (theme === 'light' ? 'bg-gray-100 text-gray-400' : 'bg-gray-700 text-gray-400')
-                  }`}
-              >
-                <span className="text-xl font-semibold">
-                  {formData.isActive ? 'A' : 'I'}
-                </span>
-              </motion.div>
-
-              <div className="space-y-1">
-                <h3 className={`font-medium ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>
-                  {formData.isActive ? 'Active Status' : 'Inactive Status'}
-                </h3>
-                <p className={`text-sm ${theme === 'light' ? 'text-gray-500' : 'text-gray-400'}`}>
-                  {formData.isActive 
-                    ? 'Employee has access to all assigned systems' 
-                    : 'Employee access is currently restricted'}
-                </p>
-              </div>
-            </motion.div>
-
-            <motion.div 
-              initial={false}
-              animate={{
-                rotate: formData.isActive ? 0 : 180,
-              }}
-              className={`h-8 w-8 rounded-full flex items-center justify-center
-                ${formData.isActive 
-                  ? (theme === 'light' ? 'bg-blue-500 text-white' : 'bg-purple-500 text-white')
-                  : (theme === 'light' ? 'bg-gray-200 text-gray-600' : 'bg-gray-700 text-gray-400')
-                }`}
-            >
-              <svg 
-                className="w-5 h-5" 
-                fill="none" 
-                viewBox="0 0 24 24" 
-                stroke="currentColor"
-              >
-                <path 
-                  strokeLinecap="round" 
-                  strokeLinejoin="round" 
-                  strokeWidth={2} 
-                  d="M5 15l7-7 7 7" 
-                />
-              </svg>
+              {formData.isActive ? (
+                <><FiCheck className="w-4 h-4 mr-1" /> Active</>
+              ) : (
+                <><FiX className="w-4 h-4 mr-1" /> Inactive</>
+              )}
             </motion.div>
           </div>
 
-          <motion.div
-            initial={false}
-            animate={{
-              backgroundColor: formData.isActive 
-                ? (theme === 'light' ? '#3B82F6' : '#8B5CF6') 
-                : (theme === 'light' ? '#E5E7EB' : '#374151'),
-              width: formData.isActive ? '100%' : '0%'
-            }}
-            className="absolute bottom-0 left-0 h-1 rounded-full transition-all duration-300"
-          />
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={handleStatusChange}
+            className={`px-4 py-2 rounded-lg transition-colors duration-200 ${
+              formData.isActive 
+                ? (theme === 'light' 
+                    ? 'bg-red-500 hover:bg-red-600 text-white' 
+                    : 'bg-red-600 hover:bg-red-700 text-white')
+                : (theme === 'light' 
+                    ? 'bg-green-500 hover:bg-green-600 text-white' 
+                    : 'bg-green-600 hover:bg-green-700 text-white')
+            }`}
+          >
+            {formData.isActive ? 'Deactivate Employee' : 'Activate Employee'}
+          </motion.button>
+        </div>
+
+        <div className="mt-4">
+          <div className={`h-2 rounded-full overflow-hidden ${theme === 'light' ? 'bg-gray-200' : 'bg-gray-700'}`}>
+            <motion.div
+              initial={{ width: 0 }}
+              animate={{ width: formData.isActive ? '100%' : '0%' }}
+              transition={{ duration: 0.3 }}
+              className={`h-full ${
+                formData.isActive 
+                  ? (theme === 'light' ? 'bg-green-500' : 'bg-green-600')
+                  : (theme === 'light' ? 'bg-red-500' : 'bg-red-600')
+              }`}
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -100,3 +81,55 @@ const Status = ({ theme, formData, handleChange }) => {
 };
 
 export default Status;
+
+// import React from 'react';
+// import { motion } from 'framer-motion';
+// import { FiCheck, FiX } from 'react-icons/fi';
+
+// const Status = ({ theme, formData, handleChange }) => {
+//   const handleStatusChange = () => {
+//     handleChange({
+//       target: {
+//         name: 'isActive',
+//         checked: !formData.isActive,
+//         type: 'checkbox'
+//       }
+//     });
+//   };
+
+//   return (
+//     <div className="space-y-4">
+//       <h4 className={`text-lg font-medium border-b pb-2 ${theme === 'light' ? 'text-gray-900 border-gray-200' : 'text-white border-gray-700'}`}>
+//         User Status
+//       </h4>
+
+//       <div className={`p-4 rounded-lg border ${theme === 'light' ? 'bg-white border-gray-200' : 'bg-gray-800 border-gray-700'}`}>
+//         <div className="flex items-center justify-between">
+//           <div className="flex items-center space-x-2">
+//             {formData.isActive ? (
+//               <FiCheck className="w-5 h-5 text-green-500" />
+//             ) : (
+//               <FiX className="w-5 h-5 text-red-500" />
+//             )}
+//             <span className={theme === 'light' ? 'text-gray-900' : 'text-white'}>
+//               {formData.isActive ? 'Active' : 'Inactive'}
+//             </span>
+//           </div>
+
+//           <button
+//             onClick={handleStatusChange}
+//             className={`px-4 py-2 rounded-lg ${
+//               formData.isActive 
+//                 ? 'bg-red-100 text-red-700 hover:bg-red-200'
+//                 : 'bg-green-100 text-green-700 hover:bg-green-200'
+//             }`}
+//           >
+//             {formData.isActive ? 'Deactivate' : 'Activate'}
+//           </button>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default Status;
