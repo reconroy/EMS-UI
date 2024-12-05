@@ -149,18 +149,14 @@ const Review = ({ formData }) => {
 
       {/* Bank & Identity Information */}
       <Section icon={FiCreditCard} title="Bank & Identity Information">
-        <Field label="Aadhaar Number" value={formData.aadhaarNo} />
-        <Field label="PAN Number" value={formData.panNo} />
+        <Field label="Aadhaar Number" value={formData.aadhaarNumber} />
+        <Field label="PAN Number" value={formData.panNumber} />
         <Field label="Bank Name" value={formData.bankName} />
         <Field label="Branch Name" value={formData.branchName} />
         <Field label="Account Number" value={formData.accountNo} />
         <Field label="IFSC Code" value={formData.ifscCode} />
       </Section>
 
-      {/* Dependent Family Details */}
-      <Section icon={FiUsers} title="Dependent Family Details">
-        {/* We'll need to implement the family details table here */}
-      </Section>
 
       {/* Document Attachments */}
       <Section icon={FiUsers} title="Document Attachments">
