@@ -105,10 +105,10 @@ const Review = ({ formData }) => {
       {/* Personal Information */}
       <Section icon={FiUser} title="Personal Information">
         <Field label="Full Name" value={formData.fullName} />
-        <Field label="Alias Name" value={formData.aliasName} />
+        <Field label="Alias Name" value={formData.nickName} />
         <Field label="Father's Name" value={formData.fatherName} />
         <Field label="Mother's Name" value={formData.motherName} />
-        <Field label="Date of Birth" value={formData.dateOfBirth} />
+        <Field label="Date of Birth" value={formData.dob} />
         <Field label="Gender" value={formData.gender} />
         <Field label="Marital Status" value={formData.maritalStatus} />
         <Field label="Qualification" value={formData.qualification} />
@@ -142,7 +142,7 @@ const Review = ({ formData }) => {
         <Field label="Working Location" value={formData.workingLocation} />
         <Field label="Department" value={formData.department} />
         <Field label="Designation" value={formData.designation} />
-        <Field label="Role" value={formData.role} />
+        <Field label="Role" value={formData.roleName} />
         <Field label="Date of Joining" value={formData.doj} />
         <Field label="Status" value={formData.isActive ? 'Active' : 'Inactive'} />
       </Section>

@@ -152,7 +152,7 @@ const ProfessionalInformation = ({ theme, formData, handleChange }) => {
               >
                 <option value="">Select {field.label}</option>
                 {field.options.map((option) => (
-                  <option key={`${field.name}_${option.value}`} value={option.value}>
+                  <option key={`${field.name}_${option.value}`} value={option.value} data-data={JSON.stringify(option.data)}>
                     {option.label}
                   </option>
                 ))}
