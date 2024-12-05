@@ -1,47 +1,108 @@
-import React, { useState , useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useThemeStore } from '../../../../store/themeStore';
 import { FiArrowRight } from 'react-icons/fi';
 import { motion } from 'framer-motion';
+import API from '../../../../services/api';
 
 const BasicDetails = ({ formData, setFormData, onNext }) => {
   const theme = useThemeStore((state) => state.theme);
   const [isConfirmed, setIsConfirmed] = useState(false);
 
-  // Mock data for dropdowns
-  const roles = [
-    { roleId: 1, roleName: "Admin" },
-    { roleId: 2, roleName: "User" },
-    { roleId: 3, roleName: "Employee" },
-  ];
+  // State for API data
+  const [locations, setLocations] = useState([]);
+  const [departments, setDepartments] = useState([]);
+  const [designations, setDesignations] = useState([]);
+  const [roles, setRoles] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const departments = [
-    "IT",
-    "Accounts",
-    "Admin",
-    "CTP",
-    "Printing",
-  ];
+  // Fetch all required data
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const [
+          locationsRes,
+          departmentsRes,
+          designationsRes,
+          rolesRes
+        ] = await Promise.all([
+          API.get('/Locations'),
+          API.get('/Departments'),
+          API.get('/Designations'),
+          API.get('/Roles')
+        ]);
 
-  const designations = [
-    "Developer",
-    "CA",
-    "Manager",
-    "Designer",
-  ];
+        setLocations(locationsRes.data);
+        setDepartments(departmentsRes.data);
+        setDesignations(designationsRes.data);
+        setRoles(rolesRes.data);
+      } catch (error) {
+        console.error('Error fetching dropdown data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const locations = [
-    "New York",
-    "San Francisco",
-    "London",
-    "Mumbai",
-  ];
+    fetchData();
+  }, []);
 
+  // Modified handleChange to handle both IDs and regular values
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value,
-    }));
+
+    if (type === 'checkbox') {
+      setFormData(prev => ({ ...prev, [name]: checked }));
+      return;
+    }
+
+    if (type === 'date') {
+      const [year, month, day] = value.split('-');
+      const formattedDate = `${day}/${month}/${year}`; // Format to dd/mm/yyyy
+      setFormData(prev => ({ ...prev, [name]: formattedDate }));
+      return;
+    }
+
+    // Handle special cases for dropdowns that need IDs
+    switch (name) {
+      case 'workingLocation':
+        const selectedLocation = locations.find(loc => loc.locationID.toString() === value);
+        setFormData(prev => ({
+          ...prev,
+          locationID: parseInt(value),
+          locationName: selectedLocation?.locationName || ''
+        }));
+        break;
+
+      case 'department':
+        const selectedDepartment = departments.find(dept => dept.deptID.toString() === value);
+        setFormData(prev => ({
+          ...prev,
+          departmentID: parseInt(value),
+          departmentName: selectedDepartment?.deptName || ''
+        }));
+        break;
+
+      case 'designation':
+        const selectedDesignation = designations.find(desig => desig.designationID.toString() === value);
+        setFormData(prev => ({
+          ...prev,
+          designationID: parseInt(value),
+          designationName: selectedDesignation?.designationName || ''
+        }));
+        break;
+
+      case 'role':
+        const selectedRole = roles.find(role => role.roleID.toString() === value);
+        setFormData(prev => ({
+          ...prev,
+          roleID: parseInt(value),
+          roleName: selectedRole?.roleName || ''
+        }));
+        break;
+
+      default:
+        setFormData(prev => ({ ...prev, [name]: value }));
+    }
   };
 
   const handleSubmit = (e) => {
@@ -58,6 +119,10 @@ const BasicDetails = ({ formData, setFormData, onNext }) => {
       }));
     }
   }, [formData.pAddress, formData.pPinCode, formData.pDistrict, formData.isSameAsPermanent, setFormData]);
+
+  // Rest of your component remains the same until the Professional Information section
+  // In the Professional Information section, update the dropdowns:
+
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
       {/* Personal Information */}
