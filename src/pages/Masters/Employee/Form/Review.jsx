@@ -12,33 +12,33 @@ const Review = ({ formData }) => {
     try {
       const html2canvas = (await import('html2canvas')).default;
       const { jsPDF } = await import('jspdf');
-      
+
       // Create a temporary div to render the PDF template
       const tempDiv = document.createElement('div');
       document.body.appendChild(tempDiv);
-      
+
       // Render the PDF template
       const root = ReactDOM.createRoot(tempDiv);
       root.render(<PDFTemplate formData={formData} />);
-      
+
       // Wait for images to load
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      const canvas = await html2canvas(tempDiv.firstChild, { 
+
+      const canvas = await html2canvas(tempDiv.firstChild, {
         scale: 2,
         useCORS: true,
         logging: false
       });
-      
+
       // Clean up
       document.body.removeChild(tempDiv);
-      
+
       const imgData = canvas.toDataURL('image/png');
       const pdf = new jsPDF('p', 'mm', 'a4');
       const imgProps = pdf.getImageProperties(imgData);
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-      
+
       pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
       pdf.save('employee-details.pdf');
     } catch (error) {
@@ -47,11 +47,10 @@ const Review = ({ formData }) => {
   };
 
   const Section = ({ icon: Icon, title, children }) => (
-    <div className={`p-6 rounded-xl border ${
-      theme === 'light' 
-        ? 'bg-white border-blue-200' 
-        : 'bg-gray-800 border-gray-700'
-    }`}>
+    <div className={`p-6 rounded-xl border ${theme === 'light'
+      ? 'bg-white border-blue-200'
+      : 'bg-gray-800 border-gray-700'
+      }`}>
       <div className="flex items-center gap-2 mb-4">
         <Icon className={`w-5 h-5 ${theme === 'light' ? 'text-blue-700' : 'text-gray-300'}`} />
         <h3 className={`text-lg font-medium ${theme === 'light' ? 'text-blue-900' : 'text-white'}`}>
@@ -87,9 +86,8 @@ const Review = ({ formData }) => {
               className="w-32 h-32 rounded-full object-cover border-4 border-white dark:border-gray-800 shadow-lg"
             />
           ) : (
-            <div className={`w-32 h-32 rounded-full flex items-center justify-center ${
-              theme === 'light' ? 'bg-blue-100' : 'bg-gray-700'
-            }`}>
+            <div className={`w-32 h-32 rounded-full flex items-center justify-center ${theme === 'light' ? 'bg-blue-100' : 'bg-gray-700'
+              }`}>
               <FiUser className="w-16 h-16 text-blue-400" />
             </div>
           )}
@@ -107,10 +105,10 @@ const Review = ({ formData }) => {
       {/* Personal Information */}
       <Section icon={FiUser} title="Personal Information">
         <Field label="Full Name" value={formData.fullName} />
-        <Field label="Alias Name" value={formData.aliasName} />
+        <Field label="Alias Name" value={formData.nickName} />
         <Field label="Father's Name" value={formData.fatherName} />
         <Field label="Mother's Name" value={formData.motherName} />
-        <Field label="Date of Birth" value={formData.dateOfBirth} />
+        <Field label="Date of Birth" value={formData.dob} />
         <Field label="Gender" value={formData.gender} />
         <Field label="Marital Status" value={formData.maritalStatus} />
         <Field label="Qualification" value={formData.qualification} />
@@ -125,23 +123,28 @@ const Review = ({ formData }) => {
 
       {/* Address Information */}
       <Section icon={FiMapPin} title="Address Information">
-        <div className="col-span-full">
-          <Field label="Permanent Address" value={formData.permanentAddress} />
-          <Field label="Permanent Pin Code" value={formData.permanentPinCode} />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
+          <div>
+            <Field label="Permanent Address" value={formData.pAddress} />
+            <Field label="Permanent Pin Code" value={formData.pPinCode} />
+            <Field label="Permanent District" value={formData.pDistrict} />
+          </div>
+          <div>
+            <Field label="Correspondence Address" value={formData.cAddress} />
+            <Field label="Correspondence Pin Code" value={formData.cPinCode} />
+            <Field label="Correspondence District" value={formData.cDistrict} />
+          </div>
         </div>
-        <div className="col-span-full">
-          <Field label="Correspondence Address" value={formData.correspondenceAddress} />
-          <Field label="Correspondence Pin Code" value={formData.correspondencePinCode} />
-        </div>
-        <Field label="Post Office" value={formData.postOffice} />
-        <Field label="District" value={formData.district} />
       </Section>
 
       {/* Professional Information */}
       <Section icon={FiBriefcase} title="Professional Information">
-        <Field label="Location" value={formData.location} />
+        <Field label="Working Location" value={formData.workingLocation} />
         <Field label="Department" value={formData.department} />
         <Field label="Designation" value={formData.designation} />
+        <Field label="Role" value={formData.roleName} />
+        <Field label="Date of Joining" value={formData.doj} />
+        <Field label="Status" value={formData.isActive ? 'Active' : 'Inactive'} />
       </Section>
 
       {/* Bank & Identity Information */}
@@ -163,12 +166,10 @@ const Review = ({ formData }) => {
       <Section icon={FiUsers} title="Document Attachments">
         <div className="col-span-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {/* Aadhaar Card */}
-          <div className={`p-4 rounded-lg border ${
-            theme === 'light' ? 'border-blue-200' : 'border-gray-700'
-          }`}>
-            <h4 className={`text-sm font-medium mb-2 ${
-              theme === 'light' ? 'text-blue-900' : 'text-white'
-            }`}>Aadhaar Card</h4>
+          <div className={`p-4 rounded-lg border ${theme === 'light' ? 'border-blue-200' : 'border-gray-700'
+            }`}>
+            <h4 className={`text-sm font-medium mb-2 ${theme === 'light' ? 'text-blue-900' : 'text-white'
+              }`}>Aadhaar Card</h4>
             {formData.aadhaarCard && (
               <img
                 src={URL.createObjectURL(formData.aadhaarCard)}
@@ -179,12 +180,10 @@ const Review = ({ formData }) => {
           </div>
 
           {/* PAN Card */}
-          <div className={`p-4 rounded-lg border ${
-            theme === 'light' ? 'border-blue-200' : 'border-gray-700'
-          }`}>
-            <h4 className={`text-sm font-medium mb-2 ${
-              theme === 'light' ? 'text-blue-900' : 'text-white'
-            }`}>PAN Card</h4>
+          <div className={`p-4 rounded-lg border ${theme === 'light' ? 'border-blue-200' : 'border-gray-700'
+            }`}>
+            <h4 className={`text-sm font-medium mb-2 ${theme === 'light' ? 'text-blue-900' : 'text-white'
+              }`}>PAN Card</h4>
             {formData.panCard && (
               <img
                 src={URL.createObjectURL(formData.panCard)}
@@ -195,12 +194,10 @@ const Review = ({ formData }) => {
           </div>
 
           {/* Passbook */}
-          <div className={`p-4 rounded-lg border ${
-            theme === 'light' ? 'border-blue-200' : 'border-gray-700'
-          }`}>
-            <h4 className={`text-sm font-medium mb-2 ${
-              theme === 'light' ? 'text-blue-900' : 'text-white'
-            }`}>Bank Passbook</h4>
+          <div className={`p-4 rounded-lg border ${theme === 'light' ? 'border-blue-200' : 'border-gray-700'
+            }`}>
+            <h4 className={`text-sm font-medium mb-2 ${theme === 'light' ? 'text-blue-900' : 'text-white'
+              }`}>Bank Passbook</h4>
             {formData.passbook && (
               <img
                 src={URL.createObjectURL(formData.passbook)}

@@ -13,6 +13,7 @@ import Roles from './pages/Masters/Roles/Roles';
 import Department from './pages/Masters/Department/Department';
 import Location from './pages/Masters/Location/Location';
 import Designation from './pages/Masters/Designation/Designation';
+import Banks from './pages/Masters/Banks/Banks';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(true);
@@ -48,7 +49,7 @@ function App() {
           <Route path="masters/departments" element={<Department />} />
           <Route path="masters/locations" element={<Location />} />
           <Route path="masters/designations" element={<Designation />} />
-
+          <Route path="masters/banks" element={<Banks />} />
           {/* Catch all route for authenticated users */}
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Route>
