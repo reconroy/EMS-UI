@@ -40,7 +40,14 @@ const ClearableInput = ({ value, onChange, placeholder, className, required = fa
 const Banks = () => {
   const theme = useThemeStore((state) => state.theme);
   const [bankName, setBankName] = useState('');
-  const [banks, setBanks] = useState([]);
+  const [banks, setBanks] = useState([
+    { bankId: 1, bankName: 'Indian Bank' },
+    { bankId: 2, bankName: 'Union Bank' },
+    { bankId: 3, bankName: 'State Bank of India' },
+    { bankId: 4, bankName: 'Canara Bank' },
+    { bankId: 5, bankName: 'HDFC Bank' },
+    { bankId: 6, bankName: 'ICICI Bank' },
+  ]);
   const [globalFilter, setGlobalFilter] = useState('');
   const [sorting, setSorting] = useState([]);
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
@@ -159,6 +166,16 @@ const Banks = () => {
     },
   ], [theme, editingBank, bankName, originalBankName]);
 
+  const fuzzyFilter = (row, columnId, value, addMeta) => {
+    const itemValue = row.getValue(columnId);
+    if (itemValue == null) return false;
+    
+    const searchValue = value.toLowerCase();
+    const itemString = String(itemValue).toLowerCase();
+    
+    return itemString.includes(searchValue);
+  };
+
   const table = useReactTable({
     data: banks,
     columns,
@@ -174,6 +191,10 @@ const Banks = () => {
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    filterFns: {
+      fuzzy: fuzzyFilter,
+    },
+    globalFilterFn: 'fuzzy',
   });
 
   const cardClass = theme === 'dark'
@@ -252,14 +273,18 @@ const Banks = () => {
       >
         <div className="flex items-center gap-4">
           <div className="flex-1 relative">
-            <FiSearch className={`absolute left-3 top-1/2 transform -translate-y-1/2 ${theme === 'dark' ? 'text-purple-400' : 'text-blue-400'}`} />
-            <ClearableInput
+            <FiSearch className={`absolute left-3 top-1/2 transform -translate-y-1/2 ${
+              theme === 'dark' ? 'text-purple-400' : 'text-blue-400'
+            }`} />
+            <input
+              type="text"
               value={globalFilter ?? ''}
-              onChange={setGlobalFilter}
+              onChange={e => setGlobalFilter(e.target.value)}
               placeholder="Search banks..."
-              className={`w-full pl-10 pr-10 py-2 rounded-lg border ${theme === 'dark'
-                ? 'bg-purple-900/20 border-purple-500/20 text-purple-100 placeholder-purple-400'
-                : 'bg-blue-50 border-blue-200 text-blue-900 placeholder-blue-400'
+              className={`w-full pl-10 pr-10 py-2 rounded-lg border ${
+                theme === 'dark'
+                  ? 'bg-purple-900/20 border-purple-500/20 text-purple-100 placeholder-purple-400'
+                  : 'bg-blue-50 border-blue-200 text-blue-900 placeholder-blue-400'
               }`}
             />
           </div>
@@ -343,9 +368,9 @@ const Banks = () => {
                 table.setPageSize(Number(e.target.value));
               }}
               className={`px-3 py-1.5 rounded-lg border ${theme === 'dark'
-                ? 'bg-purple-900/20 border-purple-500/20 text-purple-100'
-                : 'bg-blue-50 border-blue-200 text-blue-900'
-                }`}
+                ? 'bg-purple-900/20 border-purple-500/20 text-purple-100 [&>option]:bg-purple-900'
+                : 'bg-blue-50 border-blue-200 text-blue-900 [&>option]:bg-white'
+              }`}
             >
               {[10, 20, 30, 40, 50].map(pageSize => (
                 <option key={pageSize} value={pageSize}>
