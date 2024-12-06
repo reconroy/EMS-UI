@@ -79,6 +79,7 @@ const AllEmployee = () => {
   const departments = useMemo(() => getUniqueValues(data, 'departmentID'), [data]);
   const roles = useMemo(() => getUniqueValues(data, 'roleID'), [data]);
   const locations = useMemo(() => getUniqueValues(data, 'workingLocation'), [data]);
+  const designations = useMemo(() => getUniqueValues(data, 'designation'), [data]);
   const statuses = useMemo(() => ['Active', 'Inactive'], []);
 
   const columns = useMemo(() => [
