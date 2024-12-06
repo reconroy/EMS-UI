@@ -82,8 +82,8 @@ const AddEmployee = () => {
         maritalStatus: formData.maritalStatus || 'string',
         qualification: formData.qualification || 'string',
         email: formData.email || 'string',
-        mobile1: formData.mobile1 || 0,
-        mobile2: formData.mobile2 || 0,
+        mobile1: String(formData.mobile1),
+        mobile2: String(formData.mobile2) ,
         pAddress: formData.pAddress || 'string',
         pPinCode: formData.pPinCode || 0,
         pDistrict: formData.pDistrict || 'string',
@@ -97,9 +97,9 @@ const AddEmployee = () => {
         aadhaarNumber: formData.aadhaarNumber || 0,
         panNumber: formData.panNumber || 0,
         isActive: formData.isActive === undefined ? true : formData.isActive,
-        departmentID: formData.departmentId || '0',
-        designation: parseInt(formData.designation) || '0',
-        workingLocation: formData.workingLocationId || '0'
+        departmentID: formData.departmentId,
+        designation: formData.designation,
+        workingLocation: formData.workingLocationId
       };
 
       console.log('Employee Data:', employeeData);
