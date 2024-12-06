@@ -149,6 +149,10 @@ const AllEmployee = () => {
       accessorKey: 'isActive',
       header: 'Status',
       enableSorting: true,
+      filterFn: (row, columnId, filterValue) => {
+        if (filterValue === '') return true;
+        return filterValue === 'Active' ? row.original.isActive : !row.original.isActive;
+      },
       cell: ({ row }) => (
         <span className={`px-3 py-1 rounded-full text-sm ${
           row.original.isActive
@@ -468,8 +472,8 @@ const AllEmployee = () => {
               label="Location"
             />
             <FilterDropdown 
-              column="status"
-              options={filterOptions.statuses}
+              column="isActive"
+              options={['Active', 'Inactive']}
               label="Status"
             />
           </motion.div>
