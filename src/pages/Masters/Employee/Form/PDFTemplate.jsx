@@ -35,7 +35,7 @@ const PDFTemplate = ({ formData }) => {
         )}
         <div>
           <h2 className="text-xl font-bold text-gray-800">{formData.fullName}</h2>
-          <p className="text-gray-600">{formData.designation} • {formData.department}</p>
+          <p className="text-gray-600">{formData.designationName} • {formData.departmentName}</p>
           <p className="text-gray-600 mt-1">{formData.email}</p>
           <p className="text-gray-600">{formData.mobile1}</p>
         </div>
@@ -61,7 +61,7 @@ const PDFTemplate = ({ formData }) => {
           </div>
           <div>
             <p className="text-sm text-gray-600">Date of Birth</p>
-            <p className="font-medium">{formData.dateOfBirth}</p>
+            <p className="font-medium">{formData.dob}</p>
           </div>
           <div>
             <p className="text-sm text-gray-600">Gender</p>
@@ -75,11 +75,15 @@ const PDFTemplate = ({ formData }) => {
       </div>
 
       {/* Contact Information */}
-      <div className="mt-8">
+      <div className="mt-4">
         <h3 className="text-lg font-semibold text-purple-600 border-b border-gray-200 pb-2 mb-4">
           Contact Information
         </h3>
-        <div className="grid grid-cols-2 gap-x-12 gap-y-4">
+        <div className="grid grid-cols-3 gap-x-6 gap-y-2">
+          <div>
+            <p className="text-sm text-gray-600">Email Address</p>
+            <p className="font-medium">{formData.email}</p>
+          </div>
           <div>
             <p className="text-sm text-gray-600">Mobile Number</p>
             <p className="font-medium">{formData.mobile1}</p>
@@ -88,31 +92,28 @@ const PDFTemplate = ({ formData }) => {
             <p className="text-sm text-gray-600">Alternative Mobile</p>
             <p className="font-medium">{formData.mobile2 || 'N/A'}</p>
           </div>
-          <div className="col-span-2">
-            <p className="text-sm text-gray-600">Email Address</p>
-            <p className="font-medium">{formData.email}</p>
-          </div>
         </div>
       </div>
+
 
       {/* Address Information */}
       <div className="mt-8">
         <h3 className="text-lg font-semibold text-purple-600 border-b border-gray-200 pb-2 mb-4">
           Address Information
         </h3>
-        <div className="space-y-4">
+        <div className="grid grid-cols-2 gap-x-2 gap-y-4">
           <div>
             <p className="text-sm text-gray-600">Permanent Address</p>
-            <p className="font-medium">{formData.permanentAddress}</p>
+            <p className="font-medium">{formData.pAddress}</p>
             <p className="text-sm mt-1">
-              {formData.district}, {formData.postOffice} - {formData.permanentPinCode}
+              {formData.pDistrict} - {formData.pPinCode}
             </p>
           </div>
           <div>
             <p className="text-sm text-gray-600">Correspondence Address</p>
-            <p className="font-medium">{formData.correspondenceAddress}</p>
+            <p className="font-medium">{formData.cAddress}</p>
             <p className="text-sm mt-1">
-              {formData.district}, {formData.postOffice} - {formData.correspondencePinCode}
+              {formData.cDistrict} - {formData.cPinCode}
             </p>
           </div>
         </div>
@@ -123,7 +124,7 @@ const PDFTemplate = ({ formData }) => {
         <h3 className="text-lg font-semibold text-purple-600 border-b border-gray-200 pb-2 mb-4">
           Bank & Identity Information
         </h3>
-        <div className="grid grid-cols-2 gap-x-12 gap-y-4">
+        <div className="grid grid-cols-3 gap-x-12 gap-y-4">
           <div>
             <p className="text-sm text-gray-600">Aadhaar Number</p>
             <p className="font-medium">{formData.aadhaarNumber}</p>
