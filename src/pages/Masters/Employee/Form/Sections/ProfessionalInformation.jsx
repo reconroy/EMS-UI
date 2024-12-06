@@ -101,7 +101,7 @@ const ProfessionalInformation = ({ theme, formData, handleChange }) => {
         value: desig.designationID?.toString(),
         label: desig.designationName,
         data: {
-          id: desig.designationID,
+          id: desig.designation,
           name: desig.designationName
         }
       })) || [],

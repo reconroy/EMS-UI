@@ -75,7 +75,6 @@ const AddEmployee = () => {
       };
 
       const employeeData = {
-        empID: 0,
         fullName: formData.fullName || 'string',
         nickName: formData.nickName || 'string',
         fatherName: formData.fatherName || 'string',
@@ -91,16 +90,16 @@ const AddEmployee = () => {
         cAddress: formData.cAddress || 'string',
         cPinCode: formData.cPinCode || 0,
         cDistrict: formData.cDistrict || 'string',
-        dob: formatDate(formData.dob) || '2024-12-05',
+        dob: formatDate(formData.dob) || '2024-12-05',        
         doj: formatDate(formData.doj) || '2024-12-05',
         gender: formData.gender || 'string',
-        departmentID: formData.departmentId || 0,
         roleID: formData.roleId || 0,
-        designation: formData.designationId || 0,
         aadhaarNumber: formData.aadhaarNumber || 0,
         panNumber: formData.panNumber || 0,
         isActive: formData.isActive === undefined ? true : formData.isActive,
-        workingLocation: formData.workingLocationId || 0
+        departmentID: formData.departmentId || '0',
+        designation: parseInt(formData.designation) || '0',
+        workingLocation: formData.workingLocationId || '0'
       };
 
       console.log('Employee Data:', employeeData);
