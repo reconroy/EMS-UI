@@ -62,7 +62,7 @@ const BasicDetails = ({ formData, setFormData, onNext }) => {
         const select = e.target;
         const selectedOption = select.options[select.selectedIndex];
         const data = JSON.parse(selectedOption.dataset.data || '{}');
-        
+        console.log(selectedOption)
         if (name === 'role') {
           setFormData(prev => ({
             ...prev,

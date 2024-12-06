@@ -7,6 +7,7 @@ const ProfessionalInformation = ({ theme, formData, handleChange }) => {
   const [designations, setDesignations] = useState([]);
   const [roles, setRoles] = useState([]);
   const [loading, setLoading] = useState(true);
+  console.log(formData)
 
   useEffect(() => {
     const fetchLocations = async () => {
@@ -59,17 +60,20 @@ const ProfessionalInformation = ({ theme, formData, handleChange }) => {
 
     fetchAllData();
   }, []);
+  console.log(locations)
+
 
   const fields = [
+
     {
       label: 'Working Location',
       name: 'workingLocation', 
       type: 'select',
       options: locations?.map(loc => ({
-        value: loc.locationId?.toString(),
+        value: loc.locationID?.toString(),
         label: loc.locationName,
         data: {
-          id: loc.locationId,
+          id: loc.locationID,
           name: loc.locationName
         }
       })) || [],
@@ -80,10 +84,10 @@ const ProfessionalInformation = ({ theme, formData, handleChange }) => {
       name: 'department',
       type: 'select', 
       options: departments?.map(dept => ({
-        value: dept.deptId?.toString(),
+        value: dept.deptID?.toString(),
         label: dept.deptName,
         data: {
-          id: dept.deptId,
+          id: dept.deptID,
           name: dept.deptName
         }
       })) || [],
@@ -94,10 +98,10 @@ const ProfessionalInformation = ({ theme, formData, handleChange }) => {
       name: 'designation',
       type: 'select',
       options: designations?.map(desig => ({
-        value: desig.designationId?.toString(),
+        value: desig.designationID?.toString(),
         label: desig.designationName,
         data: {
-          id: desig.designationId,
+          id: desig.designationID,
           name: desig.designationName
         }
       })) || [],
@@ -137,7 +141,9 @@ const ProfessionalInformation = ({ theme, formData, handleChange }) => {
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {fields.map((field) => (
-          <div key={field.name} className="space-y-1">
+         
+          <div key={field.name} className="space-y-1"> 
+          {console.log(field)}
             <label className={`block text-sm font-medium ${theme === 'light' ? 'text-gray-900' : 'text-gray-300'}`}>
               {field.label} {field.required && <span className="text-red-500">*</span>}
             </label>
