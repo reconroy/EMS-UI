@@ -105,11 +105,6 @@ const AllEmployee = () => {
     setShowDetailsModal(true);
   };
 
-  // Get unique values for filter dropdowns
-  const getUniqueValues = (data, key) => {
-    return [...new Set(data.map(item => item[key]))].sort();
-  };
-
   const data = useMemo(() => employees, [employees]);
 
   const filterOptions = useMemo(() => ({
