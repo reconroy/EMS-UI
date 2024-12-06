@@ -97,7 +97,7 @@ const Review = ({ formData }) => {
             {formData.fullName || 'Employee Name'}
           </h2>
           <p className={`text-sm ${theme === 'light' ? 'text-blue-600' : 'text-gray-300'}`}>
-            {formData.designation} • {formData.department}
+            {formData.designationName} • {formData.departmentName}
           </p>
         </div>
       </div>
