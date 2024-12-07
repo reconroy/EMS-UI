@@ -101,12 +101,18 @@ const EmployeeDetailsModal = ({ employee, onClose }) => {
 
             {/* Professional Information */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              <InfoItem label="Department" value={employee.departmentID} />
-              <InfoItem label="Role" value={employee.roleID} />
-              <InfoItem label="Designation" value={employee.designation} />
-              <InfoItem label="Working Location" value={employee.workingLocation} />
-              <InfoItem label="Date of Birth" value={new Date(employee.dob).toLocaleDateString()} />
-              <InfoItem label="Date of Joining" value={new Date(employee.doj).toLocaleDateString()} />
+              <InfoItem label="Department" value={employee.departmentName} />
+              <InfoItem label="Role" value={employee.roleName} />
+              <InfoItem label="Designation" value={employee.designationName} />
+              <InfoItem label="Working Location" value={employee.locationName} />
+              <InfoItem 
+                label="Date of Birth" 
+                value={employee.dob ? new Date(employee.dob).toLocaleDateString() : ''} 
+              />
+              <InfoItem 
+                label="Date of Joining" 
+                value={employee.doj ? new Date(employee.doj).toLocaleDateString() : ''} 
+              />
             </div>
 
             {/* Identity Information */}
@@ -136,7 +142,7 @@ const InfoItem = ({ label, value, className = '' }) => {
       <p className={`mt-1 ${
         theme === 'dark' ? 'text-purple-100' : 'text-blue-900'
       }`}>
-        {value}
+        {value || '-'}
       </p>
     </div>
   );

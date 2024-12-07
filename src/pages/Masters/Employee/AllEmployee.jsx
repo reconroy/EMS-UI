@@ -10,11 +10,11 @@ import {
   getSortedRowModel,
   flexRender
 } from '@tanstack/react-table';
-import { 
-  FiSearch, 
-  FiPlus, 
-  FiEdit2, 
-  FiTrash2, 
+import {
+  FiSearch,
+  FiPlus,
+  FiEdit2,
+  FiTrash2,
   FiFilter,
   FiDownload,
   FiUpload,
@@ -46,41 +46,73 @@ const AllEmployee = () => {
   const [loading, setLoading] = useState(true);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [departments, setDepartments] = useState([]);
+  const [designations, setDesignations] = useState([]);
+  const [locations, setLocations] = useState([]);
+  const [roles, setRoles] = useState([]);
 
-  // Fetch employees
+  // Fetch all required data
   useEffect(() => {
-    fetchEmployees();
-  }, []);
+    const fetchAllData = async () => {
+      try {
+        setLoading(true);
+        const [
+          employeesRes,
+          departmentsRes,
+          designationsRes,
+          locationsRes,
+          rolesRes
+        ] = await Promise.all([
+          API.get('/Employees'),
+          API.get('/Departments'),
+          API.get('/Designations'),
+          API.get('/Locations'),
+          API.get('/Roles')
+        ]);
 
-  const fetchEmployees = async () => {
-    try {
-      setLoading(true);
-      const response = await API.get(endpoints.employees.list);
-      setEmployees(response.data);
-    } catch (error) {
-      console.error('Error fetching employees:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+        // Create lookup maps for efficient access
+        const deptMap = new Map(departmentsRes.data.map(d => [d.deptID, d.deptName]));
+        const desigMap = new Map(designationsRes.data.map(d => [d.designationID, d.designationName]));
+        const locMap = new Map(locationsRes.data.map(l => [l.locationID, l.locationName]));
+        const roleMap = new Map(rolesRes.data.map(r => [r.roleId, r.roleName]));
+
+        // Enhance employee data with names instead of IDs
+        const enhancedEmployees = employeesRes.data.map(emp => ({
+          ...emp,
+          departmentName: deptMap.get(emp.departmentID) || 'Unknown Department',
+          designationName: desigMap.get(emp.designation) || 'Unknown Designation',
+          locationName: locMap.get(emp.workingLocation) || 'Unknown Location',
+          roleName: roleMap.get(emp.roleID) || 'Unknown Role'
+        }));
+
+        setEmployees(enhancedEmployees);
+        setDepartments(departmentsRes.data);
+        setDesignations(designationsRes.data);
+        setLocations(locationsRes.data);
+        setRoles(rolesRes.data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAllData();
+  }, []);
 
   const handleViewDetails = (employee) => {
     setSelectedEmployee(employee);
     setShowDetailsModal(true);
   };
 
-  // Get unique values for filter dropdowns
-  const getUniqueValues = (data, key) => {
-    return [...new Set(data.map(item => item[key]))].sort();
-  };
-
   const data = useMemo(() => employees, [employees]);
-  
-  const departments = useMemo(() => getUniqueValues(data, 'departmentID'), [data]);
-  const roles = useMemo(() => getUniqueValues(data, 'roleID'), [data]);
-  const locations = useMemo(() => getUniqueValues(data, 'workingLocation'), [data]);
-  const designations = useMemo(() => getUniqueValues(data, 'designation'), [data]);
-  const statuses = useMemo(() => ['Active', 'Inactive'], []);
+
+  const filterOptions = useMemo(() => ({
+    departments: departments.map(d => d.deptName),
+    designations: designations.map(d => d.designationName),
+    locations: locations.map(l => l.locationName),
+    statuses: ['Active', 'Inactive']
+  }), [departments, designations, locations]);
 
   const columns = useMemo(() => [
     {
@@ -94,17 +126,17 @@ const AllEmployee = () => {
       enableSorting: true,
     },
     {
-      accessorKey: 'departmentID',
+      accessorKey: 'departmentName',
       header: 'Department',
       enableSorting: true,
     },
     {
-      accessorKey: 'designation',
+      accessorKey: 'designationName',
       header: 'Designation',
       enableSorting: true,
     },
     {
-      accessorKey: 'workingLocation',
+      accessorKey: 'locationName',
       header: 'Location',
       enableSorting: true,
     },
@@ -112,15 +144,23 @@ const AllEmployee = () => {
       accessorKey: 'isActive',
       header: 'Status',
       enableSorting: true,
+      filterFn: (row, columnId, filterValue) => {
+        if (filterValue === '') return true;
+        return filterValue === 'Active' ? row.original.isActive : !row.original.isActive;
+      },
       cell: ({ row }) => (
-        <span className={`px-3 py-1 rounded-full text-sm ${
-          row.original.isActive
+        <span className={`px-3 py-1 rounded-full text-sm ${row.original.isActive
             ? 'bg-green-100 text-green-800'
             : 'bg-red-100 text-red-800'
-        }`}>
+          }`}>
           {row.original.isActive ? 'Active' : 'Inactive'}
         </span>
       ),
+    },
+    {
+      accessorKey: 'roleName',
+      header: 'Role',
+      enableSorting: true,
     },
     {
       id: 'actions',
@@ -128,13 +168,17 @@ const AllEmployee = () => {
       enableSorting: false,
       cell: ({ row }) => (
         <div className="flex justify-end gap-3">
-          <button className={`${theme === 'dark' ? 'text-purple-400 hover:text-purple-300' : 'text-blue-400 hover:text-blue-300'} transition-colors`}>
+          
+          <button
+            onClick={() => navigate(`/masters/employee/update/${row.original.empID}`)}
+            className={`${theme === 'dark' ? 'text-purple-400 hover:text-purple-300' : 'text-blue-400 hover:text-blue-300'} transition-colors`}
+          >
             <FiEdit2 className="w-5 h-5" />
           </button>
           <button className="text-red-400 hover:text-red-300 transition-colors">
             <FiTrash2 className="w-5 h-5" />
           </button>
-          <button 
+          <button
             onClick={() => handleViewDetails(row.original)}
             className={`${theme === 'dark' ? 'text-purple-400 hover:text-purple-300' : 'text-blue-400 hover:text-blue-300'} transition-colors`}
           >
@@ -149,30 +193,30 @@ const AllEmployee = () => {
   const fuzzyFilter = (row, columnId, value, addMeta) => {
     // Get the value of the current cell
     const itemValue = row.getValue(columnId);
-    
+
     // If the cell has no value, check other cells in the row
     if (itemValue == null) {
       // Search through all column values in this row
-      const rowValues = columns.map(col => 
+      const rowValues = columns.map(col =>
         col.accessorKey ? row.getValue(col.accessorKey) : null
       );
-      return rowValues.some(val => 
-        val != null && 
+      return rowValues.some(val =>
+        val != null &&
         String(val).toLowerCase().includes(value.toLowerCase())
       );
     }
-    
+
     // Convert both the search value and cell value to lowercase for case-insensitive comparison
     const searchValue = value.toLowerCase();
     const itemString = String(itemValue).toLowerCase();
-    
+
     // Check if the cell value includes the search term
     return itemString.includes(searchValue);
   };
 
   const FilterDropdown = ({ column, options, label }) => {
     const currentFilter = columnFilters.find(f => f.id === column)?.value || '';
-    
+
     return (
       <div className="flex flex-col gap-1">
         <label className={`text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
@@ -194,24 +238,23 @@ const AllEmployee = () => {
               });
             }
           }}
-          className={`px-3 py-1.5 rounded-lg border ${
-            theme === 'dark'
+          className={`px-3 py-1.5 rounded-lg border ${theme === 'dark'
               ? 'bg-purple-900/20 border-purple-500/20 text-purple-100'
               : 'bg-white border-gray-200 text-gray-900'
-          }`}
+            }`}
           style={{
             colorScheme: theme === 'dark' ? 'dark' : 'light'
           }}
         >
-          <option 
-            value="" 
+          <option
+            value=""
             className={theme === 'dark' ? 'bg-gray-800 text-purple-100' : 'bg-white text-gray-900'}
           >
             All {label}s
           </option>
           {options.map(option => (
-            <option 
-              key={option} 
+            <option
+              key={option}
               value={option}
               className={theme === 'dark' ? 'bg-gray-800 text-purple-100' : 'bg-white text-gray-900'}
             >
@@ -267,7 +310,7 @@ const AllEmployee = () => {
   const handleExportToExcel = () => {
     try {
       console.log('Total employees:', employees.length); // Debug log
-      
+
       // Use the entire employees array instead of filtered/paginated data
       const exportData = employees.map(emp => {
         console.log('Processing employee:', emp); // Debug log
@@ -291,13 +334,13 @@ const AllEmployee = () => {
           'Date of Birth': emp.dob ? new Date(emp.dob).toLocaleDateString() : '',
           'Date of Joining': emp.doj ? new Date(emp.doj).toLocaleDateString() : '',
           'Gender': emp.gender,
-          'Department ID': emp.departmentID,
-          'Role ID': emp.roleID,
-          'Designation': emp.designation,
+          'Department': emp.departmentName,
+          'Role': emp.roleName,
+          'Designation': emp.designationName,
           'Aadhaar Number': emp.aadhaarNumber,
           'PAN Number': emp.panNumber,
           'Status': emp.isActive ? 'Active' : 'Inactive',
-          'Working Location': emp.workingLocation
+          'Working Location': emp.locationName
         };
       });
 
@@ -316,7 +359,7 @@ const AllEmployee = () => {
 
       // Save the file
       XLSX.writeFile(wb, fileName);
-      
+
       console.log('File exported successfully'); // Debug log
     } catch (error) {
       console.error('Error exporting to Excel:', error);
@@ -363,18 +406,16 @@ const AllEmployee = () => {
                 placeholder="Search employees..."
                 value={globalFilter ?? ''}
                 onChange={e => setGlobalFilter(e.target.value)}
-                className={`w-full pl-10 pr-10 py-2 rounded-lg border ${
-                  theme === 'dark'
+                className={`w-full pl-10 pr-10 py-2 rounded-lg border ${theme === 'dark'
                     ? 'bg-purple-900/20 border-purple-500/20 text-purple-100 placeholder-purple-400'
                     : 'bg-white border-gray-200 text-gray-900 placeholder-gray-400'
-                }`}
+                  }`}
               />
               {globalFilter && (
                 <button
                   onClick={() => setGlobalFilter('')}
-                  className={`absolute right-3 top-1/2 transform -translate-y-1/2 ${
-                    theme === 'dark' ? 'text-purple-400 hover:text-purple-300' : 'text-blue-400 hover:text-blue-500'
-                  } transition-colors`}
+                  className={`absolute right-3 top-1/2 transform -translate-y-1/2 ${theme === 'dark' ? 'text-purple-400 hover:text-purple-300' : 'text-blue-400 hover:text-blue-500'
+                    } transition-colors`}
                 >
                   <FiX className="w-4 h-4" />
                 </button>
@@ -382,14 +423,14 @@ const AllEmployee = () => {
             </div>
           </div>
           <div className="flex gap-2">
-            <button 
+            <button
               onClick={() => setShowFilters(!showFilters)}
               className={`px-4 py-2 rounded-lg flex items-center gap-2 ${secondaryButtonClass}`}
             >
               <FiFilter className="w-5 h-5" />
               <span className="hidden sm:inline">Filters</span>
             </button>
-            <button 
+            <button
               onClick={handleExportToExcel}
               className={`px-4 py-2 rounded-lg flex items-center gap-2 ${secondaryButtonClass}`}
             >
@@ -405,29 +446,29 @@ const AllEmployee = () => {
 
         {/* Column Filters */}
         {showFilters && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4 border-t border-gray-200 dark:border-gray-700"
           >
-            <FilterDropdown 
-              column="department"
-              options={departments}
+            <FilterDropdown
+              column="departmentName"
+              options={filterOptions.departments}
               label="Department"
             />
-            <FilterDropdown 
-              column="designation"
-              options={designations}
+            <FilterDropdown
+              column="designationName"
+              options={filterOptions.designations}
               label="Designation"
             />
-            <FilterDropdown 
-              column="location"
-              options={locations}
+            <FilterDropdown
+              column="locationName"
+              options={filterOptions.locations}
               label="Location"
             />
-            <FilterDropdown 
-              column="status"
-              options={statuses}
+            <FilterDropdown
+              column="isActive"
+              options={['Active', 'Inactive']}
               label="Status"
             />
           </motion.div>
@@ -446,7 +487,7 @@ const AllEmployee = () => {
               {table.getHeaderGroups().map(headerGroup => (
                 <tr key={headerGroup.id} className={`border-b ${theme === 'dark' ? 'border-purple-500/20' : 'border-gray-200'}`}>
                   {headerGroup.headers.map(header => (
-                    <th 
+                    <th
                       key={header.id}
                       className={`px-6 py-4 text-left ${textClass}`}
                     >
@@ -481,9 +522,9 @@ const AllEmployee = () => {
                   key={row.id}
                   className={`
                     border-b last:border-b-0 
-                    ${index % 2 === 0 
-                      ? theme === 'dark' 
-                        ? 'bg-purple-900/10' 
+                    ${index % 2 === 0
+                      ? theme === 'dark'
+                        ? 'bg-purple-900/10'
                         : 'bg-blue-50'
                       : theme === 'dark'
                         ? 'bg-transparent'
@@ -516,11 +557,10 @@ const AllEmployee = () => {
               onChange={e => {
                 table.setPageSize(Number(e.target.value));
               }}
-              className={`px-3 py-1 rounded border ${
-                theme === 'dark'
+              className={`px-3 py-1 rounded border ${theme === 'dark'
                   ? 'bg-purple-900/20 border-purple-500/20 text-purple-100'
                   : 'bg-white border-gray-200 text-gray-900'
-              }`}
+                }`}
             >
               {[10, 20, 30, 40, 50].map(pageSize => (
                 <option key={pageSize} value={pageSize}>
@@ -574,11 +614,10 @@ const AllEmployee = () => {
                   const page = e.target.value ? Number(e.target.value) - 1 : 0;
                   table.setPageIndex(page);
                 }}
-                className={`w-16 px-2 py-1 rounded border ${
-                  theme === 'dark'
+                className={`w-16 px-2 py-1 rounded border ${theme === 'dark'
                     ? 'bg-purple-900/20 border-purple-500/20 text-purple-100'
                     : 'bg-white border-gray-200 text-gray-900'
-                }`}
+                  }`}
               />
             </span>
           </div>
